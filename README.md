@@ -38,3 +38,7 @@ For more example apps, see the
 created by the awesome electron community.
 
 #### License [CC0 1.0 (Public Domain)](LICENSE.md)
+
+## Renderer
+Panning and Zoom functionalities added. Use arrow keys to pan around the map. Use the numpad + and - keys to zoom in and out.
+
