@@ -1,0 +1,9 @@
+html, body {
+	position: fixed;
+	overflow: hidden;
+}
+
+html, body, canvas {
+	margin: 0; 
+	padding: 0;
+}
