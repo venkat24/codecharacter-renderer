@@ -7,3 +7,44 @@ html, body, canvas {
 	margin: 0; 
 	padding: 0;
 }
+
+div.button {
+	position: absolute;
+	bottom: 0px;
+	z-index: 0;
+	width: 33.333%;
+	text-align: center;
+	font-size: 1.5em;
+	color: white;
+	background: linear-gradient(175deg, #666666 50%, #111111 90%);
+	cursor: pointer;
+	padding: 20px 0px;
+	border-radius: 15px;
+	opacity: 0.7;
+	transition: transform 0.3s, background 1s, box-shadow 0.2s;
+}
+
+.button:hover {
+    z-index: 1;
+    box-shadow: 1px 2px 7px #555555, 2px 3px 10px black;
+    transform: scale(1.02, 1.02);
+}
+
+.button:active {
+	z-index: 1;
+	transform: scale(1.02, 1.02);	
+    box-shadow: 0 0;
+    background: linear-gradient(175deg, #111111 50%, #666666 90%);
+}
+
+#play {
+	left: 0%;
+}
+
+#restart {
+	left: 33.333%;
+}
+
+#exit {
+	left: 66.666%;
+}

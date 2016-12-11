@@ -5,15 +5,20 @@
 <title>Renderer</title>
 <link rel="stylesheet" type="text/css" href="renderer.css">
 
-<body></body>
+<body>
+	
+<div class="button" id="play" onclick="play(this)">Play</div>
+<div class="button" id="restart">Restart</div>
+<div class="button" id="exit">Exit</div>
 
+</body>
+
+<script type="text/javascript" src="buttons.js"></script>
 <script>
-
-// You can also require other files to run in this process
-require('./node_modules/pixi.js/dist/pixi.js')
-require('./renderer.js')
-// require
-
+	// You can also require other files to run in this process
+	require('./node_modules/pixi.js/dist/pixi.js');
+	require('./renderer.js');
+	// require
 </script>
 
 </html>
