@@ -1,1 +1,3 @@
 node_modules
+src/ipc/*_pb.js
+npm-debug.log
