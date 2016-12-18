@@ -4,6 +4,7 @@
   "description": "Renderer for Code Character @ Pragyan 2017",
   "main": "src/main.js",
   "scripts": {
+    "prestart": "protoc --js_out=import_style=commonjs,binary:. src/ipc/state.proto src/ipc/utilities.proto",
     "start": "electron ."
   },
   "repository": "https://github.com/venkat24/codecharacter-renderer",
@@ -14,7 +15,7 @@
     "electron": "^1.4.1"
   },
   "dependencies": {
-    "pixi.js": "^4.2.3",
-    "protobufjs": "^6.2.1"
+    "google-protobuf": "^3.1.1",
+    "pixi.js": "^4.2.3"
   }
 }
