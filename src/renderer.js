@@ -43,10 +43,12 @@ PIXI.loader
 	.add("forest", "./assets/forest.jpg")
 	.add("plain", "./assets/plains.jpg")
 	.add("mountain", "./assets/mountain.jpg")
+	.add("actor", "./assets/bunny.png")
 	.load(setup);
 
 function setup() {
 	loadTerrain();
+	loadActor();
 	render();
 }
 
@@ -102,6 +104,35 @@ function loadTerrain() {
 
 			stage.addChild(grid);
 		}
+	}
+}
+
+function getSprite() {
+	return {
+		"actors" : [{
+			"id" : 0,
+			"x"  : 0,
+			"y"	 : 0
+		},
+		{
+			"id" : 1,
+			"x"  : 150,
+			"y"	 : 200
+		}]
+	};
+}
+
+function loadActor() {
+	var Sprite = getSprite();
+	var display;
+	var actorsLength = Sprite.actors.length;		
+	for(var i = 0; i< actorsLength; i++) { 
+		display = new PIXI.Sprite(PIXI.loader.resources.actor.texture);
+		display.scale.x = 0.5;
+		display.scale.y = 0.5;
+		display.position.x = Sprite.actors[i].x;
+		display.position.y = Sprite.actors[i].y;
+		stage.addChild(display);
 	}
 }
 
