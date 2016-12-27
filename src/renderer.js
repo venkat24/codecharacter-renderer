@@ -9,7 +9,9 @@ var stage = new PIXI.Container(),
 	screen = new PIXI.Container(),
 	renderer = PIXI.autoDetectRenderer(width, height);
 
-var map;
+var grid = [],
+	gridW = 102.4,
+	gridH = 102.4;
 
 var camera = {
 	x: 0,
@@ -70,8 +72,8 @@ function getTerrain() {
 		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'F', 'F', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
 		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
 		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+		['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
+		['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
 		['P', 'P', 'F', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
 		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
 		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
@@ -83,26 +85,20 @@ function getTerrain() {
 function loadTerrain() {
 	var terrain = getTerrain();
 
-	var gridW = renderer.width / terrain.length | 0;
-	var gridH = renderer.height / terrain.length | 0;
-
-	var grid;
 	for (var i = 0; i < terrain.length; i++) {
+		grid[i] = [];
 		for (var j = 0; j < terrain.length; j++) {
 			if (terrain[i][j] === 'P')
-				grid = new PIXI.Sprite(PIXI.loader.resources.plain.texture);
+				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.plain.texture);
 			else if (terrain[i][j] === 'M')
-				grid = new PIXI.Sprite(PIXI.loader.resources.mountain.texture);
+				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.mountain.texture);
 			else if (terrain[i][j] === 'F')
-				grid = new PIXI.Sprite(PIXI.loader.resources.forest.texture);
+				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.forest.texture);
 
-			grid.scale.x = 0.5;
-			grid.scale.y = 0.5;
+			grid[i][j].scale.set(0.4, 0.4);
+			grid[i][j].position.set(gridW * i, gridH * j);
 
-			grid.position.x = gridW * i;
-			grid.position.y = gridH * j | 0;
-
-			stage.addChild(grid);
+			stage.addChild(grid[i][j]);
 		}
 	}
 }
@@ -139,7 +135,7 @@ function loadActor() {
 function render() {
 	// Dynamic resizing (or automatically strech renderer to full screen)
 	stage.setTransform(camera.zoom * camera.x, camera.zoom * camera.y, camera.zoom, camera.zoom);
-	// correction();
+	correction();
 
 	renderer.render(stage);
 	requestAnimationFrame(render);
@@ -150,5 +146,10 @@ function correction() {
 		x: -(1 - 1 / camera.zoom) * width / 2,
 		y: -(1 - 1 / camera.zoom) * height / 2
 	};
-	map.setTransform(change.x, change.y);
+
+	for (var i in grid) {
+		for (var j in grid[i]) {
+			grid[i][j].setTransform(change.x + gridW * i, change.y + gridH * j);
+		}
+	}
 }
