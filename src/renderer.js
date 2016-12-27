@@ -13,31 +13,66 @@ var grid = [],
 	gridW = 102.4,
 	gridH = 102.4;
 
+var up = false,
+	down = false,
+	left = false,
+	right = false,
+	zoom = {
+		in: false,
+		out: false,
+		val: 1
+	};
+
 var camera = {
 	x: 0,
 	y: 0,
+	vel: {
+		x: 0,
+		y: 0,
+		zoom: 0
+	},
 	zoom: 1
 };
 
 document.body.appendChild(renderer.view);
 document.body.addEventListener("keydown", function(e) {
 	if (e.keyCode == 37) {
-		camera.x += 10;
+		left = true;
 	}
 	if (e.keyCode == 38) {
-		camera.y += 10;
+		up = true;
 	}
 	if (e.keyCode == 39) {
-		camera.x -= 10;
+		right = true;
 	}
 	if (e.keyCode == 40) {
-		camera.y -= 10;
+		down = true;
 	}
-	if (e.keyCode == 107) {
-		camera.zoom *= 1.25;
+	if (e.keyCode == 187) {
+		zoom.in = true;
 	}
-	if (e.keyCode == 109) {
-		camera.zoom /= 1.25;
+	if (e.keyCode == 189) {
+		zoom.out = true;
+	}
+});
+document.body.addEventListener("keyup", function (e) {
+	if (e.keyCode == 37) {
+		left = false;
+	}
+	if (e.keyCode == 38) {
+		up = false;
+	}
+	if (e.keyCode == 39) {
+		right = false;
+	}
+	if (e.keyCode == 40) {
+		down = false;
+	}
+	if (e.keyCode == 187) {
+		zoom.in = false;
+	}
+	if (e.keyCode == 189) {
+		zoom.out = false;
 	}
 });
 
@@ -133,12 +168,66 @@ function loadActor() {
 }
 
 function render() {
+	screenPosition();
+	screenZoom();
+
 	// Dynamic resizing (or automatically strech renderer to full screen)
 	stage.setTransform(camera.zoom * camera.x, camera.zoom * camera.y, camera.zoom, camera.zoom);
 	correction();
 
 	renderer.render(stage);
 	requestAnimationFrame(render);
+}
+
+function screenPosition() {
+	if ( !(up && down) ) {
+		if (up && camera.vel.y < 10)
+			camera.vel.y += 1;
+		if (down && camera.vel.y > -10)
+			camera.vel.y -= 1;
+	}
+
+	if ( !(left && right) ) {
+		if (left && camera.vel.x < 10)
+			camera.vel.x += 1;
+		if (right && camera.vel.x > -10)
+			camera.vel.x -= 1;
+	}
+
+	if (camera.vel.x < 0.01 && camera.vel.x > -0.01)
+		camera.vel.x = 0;
+	if (camera.vel.y < 0.01 && camera.vel.y > -0.01)
+		camera.vel.y = 0;
+
+	camera.vel.x *= 0.85;
+	camera.vel.y *= 0.85;
+
+	camera.x += camera.vel.x;
+	camera.y += camera.vel.y;
+}
+
+function screenZoom() {
+	if (!(zoom.in && zoom.out)) {
+		if (zoom.in && camera.vel.zoom < 0.02)
+			camera.vel.zoom += 0.005;
+		if (zoom.out && camera.vel.zoom > -0.02)
+			camera.vel.zoom -= 0.005;
+	}
+
+	if (camera.vel.zoom < 0.001 && camera.vel.zoom > -0.001)
+		camera.vel.zoom = 0;
+
+	camera.vel.zoom *= 0.85;
+	camera.zoom += camera.vel.zoom;
+
+	// To Use For MOUSE SCROLL ZOOMING
+/*	if (Math.abs(camera.zoom - zoom.val) > 0.02) {
+		if (camera.zoom < zoom.val)
+			camera.zoom += 0.02;
+		else if (camera.zoom > zoom.val)
+			camera.zoom -= 0.02;
+	}
+*/
 }
 
 function correction() {
