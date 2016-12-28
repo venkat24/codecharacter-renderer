@@ -7,7 +7,7 @@ Renderer for Code Character, a Pragyan '17 event.
 ## Status
 
 - Pan  : Use arrow keys to pan around the map
-- Zoom : Use the numpad + and - keys to zoom in and out
+- Zoom : Use the +(=) and - keys to zoom in and out
 
 ## Design
 
