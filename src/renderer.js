@@ -9,9 +9,10 @@ var stage = new PIXI.Container(),
 	screen = new PIXI.Container(),
 	renderer = PIXI.autoDetectRenderer(width, height);
 
-var grid = [],
-	gridW = 102.4,
-	gridH = 102.4;
+var map,
+	grid = [],
+	gridW = 204.8,
+	gridH = 204.8;
 
 var up = false,
 	down = false,
@@ -130,12 +131,17 @@ function loadTerrain() {
 			else if (terrain[i][j] === 'F')
 				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.forest.texture);
 
-			grid[i][j].scale.set(0.4, 0.4);
+			grid[i][j].scale.set(0.8, 0.8);
 			grid[i][j].position.set(gridW * i, gridH * j);
 
 			stage.addChild(grid[i][j]);
 		}
 	}
+
+	map = {
+		width: gridW * grid[0].length,
+		height: gridH * grid.length
+	};
 }
 
 function getSprite() {
@@ -168,8 +174,8 @@ function loadActor() {
 }
 
 function render() {
-	width = window.innerWidth;
-	height = window.innerHeight;
+	// Initial variable update before each frame is rendered
+	init();
 
 	// Panning and Zooming Functions
 	screenPosition();
@@ -188,19 +194,26 @@ function render() {
 	requestAnimationFrame(render);
 }
 
+function init() {
+	width = window.innerWidth;
+	height = window.innerHeight;
+	map.x = grid[0][0].x;
+	map.y = grid[0][0].y;
+}
+
 function screenPosition() {
 	if ( !(up && down) ) {
-		if (up && camera.vel.y < 10)
-			camera.vel.y += 1;
-		if (down && camera.vel.y > -10)
-			camera.vel.y -= 1;
+		if (up && camera.vel.y < 16)
+			camera.vel.y += 1.6;
+		if (down && camera.vel.y > -16)
+			camera.vel.y -= 1.6;
 	}
 
 	if ( !(left && right) ) {
-		if (left && camera.vel.x < 10)
-			camera.vel.x += 1;
-		if (right && camera.vel.x > -10)
-			camera.vel.x -= 1;
+		if (left && camera.vel.x < 16)
+			camera.vel.x += 1.6;
+		if (right && camera.vel.x > -16)
+			camera.vel.x -= 1.6;
 	}
 
 	if (camera.vel.x < 0.01 && camera.vel.x > -0.01)
@@ -213,14 +226,35 @@ function screenPosition() {
 
 	camera.x += camera.vel.x;
 	camera.y += camera.vel.y;
+
+	if (map.x + camera.x > 0) {
+		camera.vel.x = 0;
+		camera.x = -0.01 - map.x;
+	}
+	if (map.x + camera.x < width/camera.zoom - map.width) {
+		camera.vel.x = 0;
+		camera.x = 0.01 + width/camera.zoom - map.width - map.x;
+	}
+	if (map.y + camera.y > 0) {
+		camera.vel.y = 0;
+		camera.y = -0.01 - map.y;
+	}
+	if (map.y + camera.y < height/camera.zoom - map.height) {
+		camera.vel.y = 0;
+		camera.y = 0.01 + height/camera.zoom - map.height - map.y;
+	}
 }
 
 function screenZoom() {
 	if (!(zoom.in && zoom.out)) {
-		if (zoom.in && camera.vel.zoom < 0.02)
-			camera.vel.zoom += 0.005;
-		if (zoom.out && camera.vel.zoom > -0.02)
-			camera.vel.zoom -= 0.005;
+		if (camera.zoom < 2) {
+			if (zoom.in && camera.vel.zoom < 0.02)
+				camera.vel.zoom += 0.005;
+		}
+		if (camera.zoom > 0.5) {
+			if (zoom.out && camera.vel.zoom > -0.02)
+				camera.vel.zoom -= 0.005;
+		}
 	}
 
 	if (camera.vel.zoom < 0.001 && camera.vel.zoom > -0.001)
