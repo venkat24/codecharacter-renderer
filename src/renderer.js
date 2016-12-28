@@ -168,10 +168,19 @@ function loadActor() {
 }
 
 function render() {
+	width = window.innerWidth;
+	height = window.innerHeight;
+
+	// Panning and Zooming Functions
 	screenPosition();
 	screenZoom();
 
-	// Dynamic resizing (or automatically strech renderer to full screen)
+	// Dynamic Resizing
+	if (renderer.width != width || renderer.height != height) {
+		renderer.resize(width, height);
+		document.body.appendChild(renderer.view);
+	}
+
 	stage.setTransform(camera.zoom * camera.x, camera.zoom * camera.y, camera.zoom, camera.zoom);
 	correction();
 
