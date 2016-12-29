@@ -10,9 +10,87 @@ var stage = new PIXI.Container(),
 	renderer = PIXI.autoDetectRenderer(width, height);
 
 var map,
+	actorSprites = [],
+	towerSprites = [],
+	flagSprites = [],
+	arrowSprites = [],
 	grid = [],
 	gridW = 204.8,
 	gridH = 204.8;
+
+// ****For Testing Purposes. To Replace with Data Received from Simulator****
+var actors = [
+	{
+		id: 0,
+		x: 100,
+		y: 0
+	},
+	{
+		id: 1,
+		x: 200,
+		y: 200
+	},
+	{
+		id: 2,
+		x: 700,
+		y: 250,
+		actorType: 'sword'
+
+	},
+	{
+		id: 3,
+		x: 700,
+		y: 200,
+		actorType: 'king'
+	}
+];
+
+var towers = [
+	{
+		id: 1,
+		x: 200,
+		y: 500,
+		playerID: 0
+	},
+	{
+		id: 2,
+		x: 570,
+		y: 400,
+		playerID: 1
+	},
+	{
+		id: 3,
+		x: 400,
+		y: 500,
+		playerID: 2
+	},
+];
+
+var flags = [
+	{
+		id: 1,
+		x: 600,
+		y: 0,
+		playerID: 1
+	},
+	{
+		id: 2,
+		x: 700,
+		y: 0,
+		playerID: 2
+	},
+];
+
+var arrows = [
+	{
+		id: 1,
+		x: 470,
+		y: 500,
+		rotation: -Math.PI/5
+	}
+];
+
+// ****...****
 
 var up = false,
 	down = false,
@@ -34,6 +112,9 @@ var camera = {
 	},
 	zoom: 1
 };
+
+// For animation testing purposes
+var temp = 0
 
 document.body.appendChild(renderer.view);
 document.body.addEventListener("keydown", function(e) {
@@ -82,11 +163,24 @@ PIXI.loader
 	.add("plain", "./assets/plains.jpg")
 	.add("mountain", "./assets/mountain.jpg")
 	.add("actor", "./assets/bunny.png")
+	.add("sword", "./assets/swordsman.png")
+	// .add("archer", "./assets/archer.png")
+	// .add("cavalry", "./assets/cavalry.png")
+	.add("king", "./assets/king.png")
+	.add("tower0", "./assets/tower0.png")
+	.add("tower1", "./assets/tower1.png")
+	.add("tower2", "./assets/tower2.png")
+	.add("flag1", "./assets/flag1.png")
+	.add("flag2", "./assets/flag2.png")
+	.add("arrow", "./assets/arrow.png")
 	.load(setup);
 
 function setup() {
 	loadTerrain();
-	loadActor();
+	loadActors();
+	loadTowers();
+	loadFlags();
+	loadArrows();
 	render();
 }
 
@@ -144,32 +238,55 @@ function loadTerrain() {
 	};
 }
 
-function getSprite() {
-	return {
-		"actors" : [{
-			"id" : 0,
-			"x"  : 0,
-			"y"	 : 0
-		},
-		{
-			"id" : 1,
-			"x"  : 150,
-			"y"	 : 200
-		}]
-	};
+function loadActors() {
+	for (var i in actors) {
+		if (actors[i].actorType == 'sword')
+			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.sword.texture);
+		// else if (actors[i].actorType == 'archer')
+		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.archer.texture);
+		// else if (actors[i].actorType == 'cavalry')
+		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.cavalry.texture);
+		else if (actors[i].actorType == 'king')
+			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
+		else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.actor.texture); //FOR TESTING
+
+		actorSprites[i].setTransform(actors[i].x, actors[i].y);
+		stage.addChild(actorSprites[i]);
+	}
 }
 
-function loadActor() {
-	var Sprite = getSprite();
-	var display;
-	var actorsLength = Sprite.actors.length;		
-	for(var i = 0; i< actorsLength; i++) { 
-		display = new PIXI.Sprite(PIXI.loader.resources.actor.texture);
-		display.scale.x = 0.5;
-		display.scale.y = 0.5;
-		display.position.x = Sprite.actors[i].x;
-		display.position.y = Sprite.actors[i].y;
-		stage.addChild(display);
+function loadTowers() {
+	for (var i in towers) {
+		if (towers[i].playerID == 0)
+			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower0.texture);
+		else if (towers[i].playerID == 1)
+			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower1.texture);
+		else if (towers[i].playerID == 2)
+			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower2.texture);
+
+		towerSprites[i].setTransform(towers[i].x, towers[i].y);
+		stage.addChild(towerSprites[i]);
+	}
+}
+
+function loadFlags() {
+	for (var i in flags) {
+		if (flags[i].playerID == 1)
+			flagSprites[i] = new PIXI.Sprite(PIXI.loader.resources.flag1.texture);
+		if (flags[i].playerID == 2)
+			flagSprites[i] = new PIXI.Sprite(PIXI.loader.resources.flag2.texture);
+
+		flagSprites[i].setTransform(flags[i].x, flags[i].y);
+		stage.addChild(flagSprites[i]);
+	}
+}
+
+function loadArrows() {
+	for (var i in arrows) {
+		arrowSprites[i] = new PIXI.Sprite(PIXI.loader.resources.arrow.texture);
+
+		arrowSprites[i].setTransform(arrows[i].x, arrows[i].y, 1, 1, arrows[i].rotation);
+		stage.addChild(arrowSprites[i]);
 	}
 }
 
@@ -177,9 +294,13 @@ function render() {
 	// Initial variable update before each frame is rendered
 	init();
 
-	// Panning and Zooming Functions
+	// For animation testing purposes
+	test();
+
+	// Panning and Zooming Functionality
 	screenPosition();
 	screenZoom();
+	stage.setTransform(camera.zoom * camera.x, camera.zoom * camera.y, camera.zoom, camera.zoom);
 
 	// Dynamic Resizing
 	if (renderer.width != width || renderer.height != height) {
@@ -187,8 +308,8 @@ function render() {
 		document.body.appendChild(renderer.view);
 	}
 
-	stage.setTransform(camera.zoom * camera.x, camera.zoom * camera.y, camera.zoom, camera.zoom);
-	correction();
+	// Object Position Update
+	update();
 
 	renderer.render(stage);
 	requestAnimationFrame(render);
@@ -199,6 +320,14 @@ function init() {
 	height = window.innerHeight;
 	map.x = grid[0][0].x;
 	map.y = grid[0][0].y;
+}
+
+function test() {
+	temp ++;
+	for (var i in actors) {
+		if (!actors[i].actorType)
+			actors[i].x += 5 * Math.sin(temp/25);
+	}
 }
 
 function screenPosition() {
@@ -246,7 +375,7 @@ function screenPosition() {
 }
 
 function screenZoom() {
-	if (!(zoom.in && zoom.out)) {
+	if ( !(zoom.in && zoom.out) ) {
 		if (camera.zoom < 2) {
 			if (zoom.in && camera.vel.zoom < 0.02)
 				camera.vel.zoom += 0.005;
@@ -273,7 +402,7 @@ function screenZoom() {
 */
 }
 
-function correction() {
+function update() {
 	var change = {
 		x: -(1 - 1 / camera.zoom) * width / 2,
 		y: -(1 - 1 / camera.zoom) * height / 2
@@ -283,5 +412,17 @@ function correction() {
 		for (var j in grid[i]) {
 			grid[i][j].setTransform(change.x + gridW * i, change.y + gridH * j);
 		}
+	}
+	for (var i in actorSprites) {
+		actorSprites[i].setTransform(actors[i].x + change.x, actors[i].y + change.y);
+	}
+	for (var i in towerSprites) {
+		towerSprites[i].setTransform(towers[i].x + change.x, towers[i].y + change.y);
+	}
+	for (var i in flagSprites) {
+		flagSprites[i].setTransform(flags[i].x + change.x, flags[i].y + change.y);
+	}
+	for (var i in arrowSprites) {
+		arrowSprites[i].setTransform(arrows[i].x + change.x, arrows[i].y + change.y, 1, 1, arrows[i].rotation);
 	}
 }
