@@ -14,6 +14,8 @@ var map,
 	towerSprites = [],
 	flagSprites = [],
 	arrowSprites = [],
+	actorHP = [],
+	towerHP = [],
 	grid = [],
 	gridW = 204.8,
 	gridH = 204.8;
@@ -23,7 +25,7 @@ var actors = [
 	{
 		id: 0,
 		x: 100,
-		y: 0
+		y: 15
 	},
 	{
 		id: 1,
@@ -33,15 +35,28 @@ var actors = [
 	{
 		id: 2,
 		x: 700,
-		y: 250,
-		actorType: 'sword'
-
+		y: 300,
+		actorType: 'sword',
+		attack: false,
+		HP: 40,
+		maxHP: 200
 	},
 	{
 		id: 3,
+		x: 850,
+		y: 300,
+		actorType: 'sword',
+		attack: true,
+		HP: 200,
+		maxHP: 200
+	},
+	{
+		id: 4,
 		x: 700,
 		y: 200,
-		actorType: 'king'
+		actorType: 'king',
+		HP: 300,
+		maxHP: 800
 	}
 ];
 
@@ -50,19 +65,25 @@ var towers = [
 		id: 1,
 		x: 200,
 		y: 500,
-		playerID: 0
+		playerID: 0,
+		HP: 5000,
+		maxHP: 5000
 	},
 	{
 		id: 2,
 		x: 570,
 		y: 400,
-		playerID: 1
+		playerID: 1,
+		HP: 2000,
+		maxHP: 5000
 	},
 	{
 		id: 3,
 		x: 400,
 		y: 500,
-		playerID: 2
+		playerID: 2,
+		HP: 4000,
+		maxHP: 5000
 	},
 ];
 
@@ -164,6 +185,7 @@ PIXI.loader
 	.add("mountain", "./assets/mountain.jpg")
 	.add("actor", "./assets/bunny.png")
 	.add("sword", "./assets/swordsman.png")
+	.add("attack", "./assets/attack.png")
 	// .add("archer", "./assets/archer.png")
 	// .add("cavalry", "./assets/cavalry.png")
 	.add("king", "./assets/king.png")
@@ -173,6 +195,7 @@ PIXI.loader
 	.add("flag1", "./assets/flag1.png")
 	.add("flag2", "./assets/flag2.png")
 	.add("arrow", "./assets/arrow.png")
+	.add("hp", "./assets/hp.jpg")
 	.load(setup);
 
 function setup() {
@@ -240,8 +263,11 @@ function loadTerrain() {
 
 function loadActors() {
 	for (var i in actors) {
-		if (actors[i].actorType == 'sword')
-			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.sword.texture);
+		if (actors[i].actorType == 'sword') {
+			if (!actors[i].attack)
+				actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.sword.texture);
+			else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.attack.texture);
+		}
 		// else if (actors[i].actorType == 'archer')
 		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.archer.texture);
 		// else if (actors[i].actorType == 'cavalry')
@@ -250,8 +276,13 @@ function loadActors() {
 			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
 		else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.actor.texture); //FOR TESTING
 
+		var health = actors[i].HP/actors[i].maxHP;
+		actorHP[i] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
+
 		actorSprites[i].setTransform(actors[i].x, actors[i].y);
+		actorHP[i].setTransform(actors[i].x - 5, actors[i].y - 12, health, 1);
 		stage.addChild(actorSprites[i]);
+		stage.addChild(actorHP[i]);
 	}
 }
 
@@ -264,8 +295,13 @@ function loadTowers() {
 		else if (towers[i].playerID == 2)
 			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower2.texture);
 
+		var health = towers[i].HP/towers[i].maxHP;
+		towerHP[i] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
+
 		towerSprites[i].setTransform(towers[i].x, towers[i].y);
+		towerHP[i].setTransform(towers[i].x - 5, towers[i].y - 12, health, 1);
 		stage.addChild(towerSprites[i]);
+		stage.addChild(towerHP[i]);
 	}
 }
 
@@ -416,8 +452,16 @@ function update() {
 	for (var i in actorSprites) {
 		actorSprites[i].setTransform(actors[i].x + change.x, actors[i].y + change.y);
 	}
+	for (var i in actorHP) {
+		var health = actors[i].HP/actors[i].maxHP;
+		actorHP[i].setTransform(actors[i].x + change.x - 5, actors[i].y + change.y - 12, health, 1);
+	}
 	for (var i in towerSprites) {
 		towerSprites[i].setTransform(towers[i].x + change.x, towers[i].y + change.y);
+	}
+	for (var i in towerHP) {
+		var health = towers[i].HP/towers[i].maxHP;
+		towerHP[i].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 12, health, 1);
 	}
 	for (var i in flagSprites) {
 		flagSprites[i].setTransform(flags[i].x + change.x, flags[i].y + change.y);
