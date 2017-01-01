@@ -111,6 +111,14 @@ var arrows = [
 	}
 ];
 
+// **FOR TESTING ONLY. All actors will be drawn with spritesheet animations in the final version**
+var sprite;
+var animatedSprite = {
+	x: 250,
+	y: 350
+};
+// **..**
+
 // ****...****
 
 var up = false,
@@ -196,6 +204,7 @@ PIXI.loader
 	.add("flag2", "./assets/flag2.png")
 	.add("arrow", "./assets/arrow.png")
 	.add("hp", "./assets/hp.jpg")
+	.add("running", "./assets/running.png") // FOR TESTING ONLY. There will be no 'running' asset in the final version.
 	.load(setup);
 
 function setup() {
@@ -204,6 +213,7 @@ function setup() {
 	loadTowers();
 	loadFlags();
 	loadArrows();
+	spriteSheet(); // FOR TESTING ONLY
 	render();
 }
 
@@ -324,6 +334,24 @@ function loadArrows() {
 		arrowSprites[i].setTransform(arrows[i].x, arrows[i].y, 1, 1, arrows[i].rotation);
 		stage.addChild(arrowSprites[i]);
 	}
+}
+
+function spriteSheet() {
+	var base = PIXI.loader.resources.running.texture;
+
+	var textures = [];
+	for (var i = 0; i < 10; i++) {
+		var frameTexture = new PIXI.Texture(base);
+		frameTexture.frame = new PIXI.Rectangle(32 * i, 0, 17, 24);
+		textures[i] = frameTexture;
+	}
+
+	sprite = new PIXI.extras.AnimatedSprite(textures);
+	sprite.position.set(animatedSprite.x, animatedSprite.y);
+	sprite.scale.set(1.25);
+	sprite.animationSpeed = 0.35;
+	sprite.play();
+	stage.addChild(sprite);
 }
 
 function render() {
@@ -469,4 +497,6 @@ function update() {
 	for (var i in arrowSprites) {
 		arrowSprites[i].setTransform(arrows[i].x + change.x, arrows[i].y + change.y, 1, 1, arrows[i].rotation);
 	}
+	// FOR TESTING ONLY
+	sprite.setTransform(animatedSprite.x + change.x, animatedSprite.y + change.y, 1.25, 1.25);
 }
