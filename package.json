@@ -4,7 +4,6 @@
   "description": "Renderer for Code Character @ Pragyan 2017",
   "main": "src/main.js",
   "scripts": {
-    "prestart": "protoc --js_out=import_style=commonjs,binary:. src/ipc/state.proto src/ipc/utilities.proto",
     "start": "electron ."
   },
   "repository": "https://github.com/venkat24/codecharacter-renderer",
