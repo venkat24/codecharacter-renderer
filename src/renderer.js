@@ -285,9 +285,9 @@ function loadTerrain() {
 	terrain = getTerrain(); // FOR TESTING ONLY.
 	terrainVisibility = getVisiblity(); // FOR TESTING ONLY.
 
-	for (var i in terrain) {
+	for (var i = 0; i < terrain.length; i++) {
 		grid[i] = [];
-		for (var j in terrain[i]) {
+		for (var j = 0; j < terrain[i].length; j++) {
 			if (terrain[i][j] === 'P')
 				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.plain.texture);
 			else if (terrain[i][j] === 'M')
@@ -307,9 +307,9 @@ function loadTerrain() {
 }
 
 function loadFog() {
-	for (var i in terrain) {
+	for (var i = 0; i < terrain.length; i++) {
 		fog[i] = [];
-		for (var j in terrain[i]) {
+		for (var j = 0; j < terrain[i].length; j++) {
 			fog[i][j] = new PIXI.Sprite(PIXI.loader.resources.fog.texture);
 			fog[i][j].setTransform(gridW * i, gridH * j, 0.8, 0.8);
 			stage.addChild(fog[i][j]);
@@ -318,7 +318,7 @@ function loadFog() {
 }
 
 function loadActors() {
-	for (var i in actors) {
+	for (var i = 0; i < actors.length; i++) {
 		if (actors[i].actorType == 'sword') {
 			if (!actors[i].attack)
 				actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.sword.texture);
@@ -339,7 +339,7 @@ function loadActors() {
 }
 
 function loadTowers() {
-	for (var i in towers) {
+	for (var i = 0; i < towers.length; i++) {
 		if (towers[i].playerID == 0)
 			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower0.texture);
 		else if (towers[i].playerID == 1)
@@ -357,13 +357,13 @@ function loadTowers() {
 }
 
 function loadHP() {
-	for (var i in actors) {
+	for (var i = 0; i < actors.length; i++) {
 		var health = actors[i].HP/actors[i].maxHP;
 		actorHP[i] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
 		actorHP[i].setTransform(actors[i].x - 5, actors[i].y - 12, health, 1);
 		stage.addChild(actorHP[i]);
 	}
-	for (var i in towers) {
+	for (var i = 0; i < towers.length; i++) {
 		var health = towers[i].HP/towers[i].maxHP;
 		towerHP[i] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
 		towerHP[i].setTransform(towers[i].x - 5, towers[i].y - 12, health, 1);
@@ -372,7 +372,7 @@ function loadHP() {
 }
 
 function loadFlags() {
-	for (var i in flags) {
+	for (var i = 0; i < flags.length; i++) {
 		if (flags[i].playerID == 1)
 			flagSprites[i] = new PIXI.Sprite(PIXI.loader.resources.flag1.texture);
 		if (flags[i].playerID == 2)
@@ -385,7 +385,7 @@ function loadFlags() {
 }
 
 function loadArrows() {
-	for (var i in arrows) {
+	for (var i = 0; i < arrows.length; i++) {
 		arrowSprites[i] = new PIXI.Sprite(PIXI.loader.resources.arrow.texture);
 
 		arrows[i].center = {};
@@ -443,16 +443,16 @@ function init() {
 	map.x = grid[0][0].x;
 	map.y = grid[0][0].y;
 
-	for (var i in actorSprites) {
+	for (var i = 0; i < actors.length; i++) {
 		findCenter(actors[i], actorSprites[i]);
 	}
-	for (var i in towerSprites) {
+	for (var i = 0; i < towers.length; i++) {
 		findCenter(towers[i], towerSprites[i]);
 	}
-	for (var i in flagSprites) {
+	for (var i = 0; i < flags.length; i++) {
 		findCenter(flags[i], flagSprites[i]);
 	}
-	for (var i in arrowSprites) {
+	for (var i = 0; i < arrows.length; i++) {
 		findCenter(arrows[i], arrowSprites[i]);
 	}
 }
@@ -464,7 +464,7 @@ function findCenter(object, sprite) {
 
 function test() {
 	temp ++;
-	for (var i in actors) {
+	for (var i = 0; i < actors.length; i++) {
 		if (!actors[i].actorType)
 			actors[i].x += 5 * Math.sin(temp/25);
 	}
@@ -548,8 +548,8 @@ function update() {
 		y: -(1 - 1 / camera.zoom) * height / 2
 	};
 
-	for (var i in grid) {
-		for (var j in grid[i]) {
+	for (var i = 0; i < grid.length; i++) {
+		for (var j = 0; j < grid[i].length; j++) {
 			grid[i][j].setTransform(change.x + gridW * i, change.y + gridH * j, 0.8, 0.8);
 			fog[i][j].setTransform(change.x + gridW * i, change.y + gridH * j, 0.8, 0.8);
 			if (!terrainVisibility[i][j]) {
@@ -564,20 +564,20 @@ function update() {
 			}
 		}
 	}
-	for (var i in actorSprites) {
+	for (var i = 0; i < actorSprites.length; i++) {
 		actorSprites[i].setTransform(actors[i].x + change.x, actors[i].y + change.y);
 		if (visibility(actors[i]) == 2)
 			actorSprites[i].visible = true;
 		else actorSprites[i].visible = false;
 	}
-	for (var i in actorHP) {
+	for (var i = 0; i < actorHP.length; i++) {
 		var health = actors[i].HP / actors[i].maxHP;
 		actorHP[i].setTransform(actors[i].x + change.x - 5, actors[i].y + change.y - 12, health, 1);
 		if (!actorSprites[i].visible)
 			actorHP[i].visible = false;
 		else actorHP[i].visible = true;
 	}
-	for (var i in towerSprites) {
+	for (var i = 0; i < towerSprites.length; i++) {
 		towerSprites[i].setTransform(towers[i].x + change.x, towers[i].y + change.y);
 
 		var towerVisibility = visibility(towers[i]);
@@ -603,20 +603,20 @@ function update() {
 				towerSprites[i].texture = PIXI.loader.resources.tower2.texture;
 		}
 	}
-	for (var i in towerHP) {
+	for (var i = 0; i < towerHP.length; i++) {
 		var health = towers[i].HP / towers[i].maxHP;
 		towerHP[i].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 12, health, 1);
 		if (visibility(towers[i]) == 2)
 			towerHP[i].visible = true;
 		else towerHP[i].visible = false;
 	}
-	for (var i in flagSprites) {
+	for (var i = 0; i < flagSprites.length; i++) {
 		flagSprites[i].setTransform(flags[i].x + change.x, flags[i].y + change.y);
 		if (visibility(flags[i]) == 2 || flags[i].visible)
 			flagSprites[i].visible = true;
 		else flagSprites[i].visible = false;
 	}
-	for (var i in arrowSprites) {
+	for (var i = 0; i < arrowSprites.length; i++) {
 		arrowSprites[i].setTransform(arrows[i].x + change.x, arrows[i].y + change.y, 1, 1, arrows[i].rotation);
 		if (visibility(arrows[i]) == 2)
 			arrowSprites[i].visible = true;
