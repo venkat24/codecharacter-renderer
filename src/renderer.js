@@ -15,6 +15,7 @@ var map,
 	towerSprites = [],
 	flagSprites = [],
 	arrowSprites = [],
+	baseSprites = [],
 	actorHP = [],
 	towerHP = [],
 	grid = [],
@@ -90,6 +91,7 @@ var towers = [
 		HP: 4000,
 		maxHP: 5000
 	},
+
 ];
 
 var flags = [
@@ -97,15 +99,13 @@ var flags = [
 		id: 1,
 		x: 1300,
 		y: 700,
-		playerID: 1,
-		visible: true
+		playerID: 1
 	},
 	{
 		id: 2,
 		x: 600,
 		y: 10,
-		playerID: 2,
-		visible: false
+		playerID: 2
 	},
 ];
 
@@ -115,6 +115,19 @@ var arrows = [
 		x: 470,
 		y: 500,
 		rotation: -Math.PI/5
+	}
+];
+
+var bases = [
+	{
+		playerID: 1,
+		x: 306,
+		y: 717
+	},
+	{
+		playerID: 2,
+		x: 1945,
+		y: 716
 	}
 ];
 
@@ -199,6 +212,7 @@ PIXI.loader
 	.add("plain", "./assets/plains.jpg")
 	.add("mountain", "./assets/mountain.jpg")
 	.add("fog", "./assets/fog.png")
+	.add("base", "./assets/base.png")
 	.add("actor", "./assets/bunny.png") // FOR TESTING ONLY.
 	.add("sword", "./assets/swordsman.png")
 	.add("attack", "./assets/attack.png")
@@ -223,6 +237,7 @@ function setup() {
 	loadFlags();
 	loadFog();
 	loadHP();
+	loadBases();
 	spriteSheet(); // FOR TESTING ONLY
 	render();
 }
@@ -267,7 +282,7 @@ function getVisiblity() {
 		[ 1, 0, 2, 1, 2, 2, 0, 0, 2, 1, 1, 1, 2, 1, 0, 0, 0, 2, 0, 0 ],
 		[ 1, 2, 1, 0, 0, 1, 2, 0, 2, 0, 1, 2, 1, 1, 2, 0, 1, 0, 0, 0 ],
 		[ 2, 1, 2, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 2, 2, 2, 2, 0, 0, 1 ],
-		[ 2, 1, 0, 2, 0, 2, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 2, 1, 1, 1 ],
+		[ 2, 1, 0, 2, 2, 2, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 2, 1, 1, 1 ],
 		[ 2, 1, 0, 2, 2, 0, 0, 2, 0, 1, 2, 0, 0, 0, 2, 0, 1, 2, 0, 2 ],
 		[ 1, 0, 0, 1, 2, 0, 0, 0, 1, 0, 1, 2, 0, 1, 1, 0, 2, 2, 2, 1 ],
 		[ 1, 1, 0, 2, 0, 0, 0, 2, 1, 1, 1, 1, 2, 1, 0, 2, 2, 1, 1, 2 ],
@@ -347,7 +362,6 @@ function loadTowers() {
 		else if (towers[i].playerID == 2)
 			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower2.texture);
 
-
 		towers[i].center = {};
 		towers[i].currentID = towers[i].playerID;
 		towers[i].lastSeenID = towers[i].playerID;
@@ -378,7 +392,6 @@ function loadFlags() {
 		if (flags[i].playerID == 2)
 			flagSprites[i] = new PIXI.Sprite(PIXI.loader.resources.flag2.texture);
 
-		flags[i].center = {};
 		flagSprites[i].setTransform(flags[i].x, flags[i].y);
 		stage.addChild(flagSprites[i]);
 	}
@@ -391,6 +404,15 @@ function loadArrows() {
 		arrows[i].center = {};
 		arrowSprites[i].setTransform(arrows[i].x, arrows[i].y, 1, 1, arrows[i].rotation);
 		stage.addChild(arrowSprites[i]);
+	}
+}
+
+function loadBases() {
+	for (var i = 0; i < bases.length; i++) {
+		baseSprites[i] = new PIXI.Sprite(PIXI.loader.resources.base.texture);
+
+		baseSprites[i].setTransform(bases[i].x - 102, bases[i].y - 102);
+		stage.addChild(baseSprites[i]);
 	}
 }
 
@@ -448,9 +470,6 @@ function init() {
 	}
 	for (var i = 0; i < towers.length; i++) {
 		findCenter(towers[i], towerSprites[i]);
-	}
-	for (var i = 0; i < flags.length; i++) {
-		findCenter(flags[i], flagSprites[i]);
 	}
 	for (var i = 0; i < arrows.length; i++) {
 		findCenter(arrows[i], arrowSprites[i]);
@@ -612,15 +631,15 @@ function update() {
 	}
 	for (var i = 0; i < flagSprites.length; i++) {
 		flagSprites[i].setTransform(flags[i].x + change.x, flags[i].y + change.y);
-		if (visibility(flags[i]) == 2 || flags[i].visible)
-			flagSprites[i].visible = true;
-		else flagSprites[i].visible = false;
 	}
 	for (var i = 0; i < arrowSprites.length; i++) {
 		arrowSprites[i].setTransform(arrows[i].x + change.x, arrows[i].y + change.y, 1, 1, arrows[i].rotation);
 		if (visibility(arrows[i]) == 2)
 			arrowSprites[i].visible = true;
 		else arrowSprites[i].visible = false;
+	}
+	for (var i = 0; i < baseSprites.length; i++) {
+		baseSprites[i].setTransform(bases[i].x + change.x - 102, bases[i].y + change.y - 102);
 	}
 
 	// FOR TESTING ONLY
