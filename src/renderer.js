@@ -145,6 +145,7 @@ var up = false,
 	down = false,
 	left = false,
 	right = false,
+	scroll = false,
 	zoom = {
 		in: false,
 		out: false,
@@ -205,6 +206,27 @@ document.body.addEventListener("keyup", function (e) {
 	if (e.keyCode == 189) {
 		zoom.out = false;
 	}
+});
+document.body.addEventListener("mousemove", function(e) {
+	if (e.clientX < width * 0.1)
+		left = true;
+	else left = false;
+	if (e.clientX > width * 0.9)
+		right = true;
+	else right = false;
+	if (e.clientY < height * 0.1)
+		up = true;
+	else up = false;
+	if (e.clientY > height * 0.9)
+		down = true;
+	else down = false;
+});
+document.body.addEventListener("wheel", function(e) {
+	scroll = true;
+	if (zoom.val < 2 && e.deltaY < 0)
+		zoom.val *= 1.25;
+	if (zoom.val > 0.5 && e.deltaY > 0)
+		zoom.val /= 1.25;
 });
 
 PIXI.loader
@@ -545,20 +567,21 @@ function screenZoom() {
 		}
 	}
 
+	if (scroll && Math.abs(camera.zoom - zoom.val) > 0.02) {
+		if (camera.zoom < zoom.val && camera.vel.zoom < 0.02)
+			camera.vel.zoom += 0.02;
+		else if (camera.zoom > zoom.val && camera.vel.zoom > -0.02)
+			camera.vel.zoom -= 0.02;
+	} else {
+		scroll = false;
+		zoom.val = camera.zoom;
+	}
+
 	if (camera.vel.zoom < 0.001 && camera.vel.zoom > -0.001)
 		camera.vel.zoom = 0;
 
 	camera.vel.zoom *= 0.85;
 	camera.zoom += camera.vel.zoom;
-
-	// To Use For MOUSE SCROLL ZOOMING
-/*	if (Math.abs(camera.zoom - zoom.val) > 0.02) {
-		if (camera.zoom < zoom.val)
-			camera.zoom += 0.02;
-		else if (camera.zoom > zoom.val)
-			camera.zoom -= 0.02;
-	}
-*/
 }
 
 function update() {
