@@ -8,10 +8,35 @@
 </head>
 
 <body>
+    <div class="button" id="exit" onclick="exit()">
+        <div class="container">
+            <img src="assets/close.svg">
+            <div class="description">Close</div>
+        </div>
+    </div>
+    <div class="button" id="play" onclick="play()">
+        <div class="container">
+            <img id="playSvg" src="assets/pause.svg">
+            <div class="description" id="playDescription">Pause</div>
+        </div>
+    </div>
+    <div class="button" id="restart" onclick="restart()">
+        <div class="container">
+            <img id="restartSvg" src="assets/restart.png">
+            <div class="description">Restart</div>
+        </div>
+    </div>
+    <div class="button" id="los" onclick="los()">
+        <div class="container">
+            <img id="losImg" src="assets/los.png">
+            <div class="description">LOS</div>
+        </div>
+    </div>
+</body>
 
+<script type="text/javascript" src="buttons.js"></script>
 <script>
     require('./renderer.js');
     require('./ipc/start.js');
 </script>
-</body>
 </html>
