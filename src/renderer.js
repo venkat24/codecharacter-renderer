@@ -11,6 +11,7 @@ var stage = new PIXI.Container(),
 
 var map,
 	terrain,
+	terrainVisibility,
 	actorSprites = [],
 	towerSprites = [],
 	flagSprites = [],
@@ -149,7 +150,8 @@ var up = false,
 	zoom = {
 		in: false,
 		out: false,
-		val: 1
+		val: 0.6,
+		init: 0
 	};
 
 var camera = {
@@ -225,7 +227,7 @@ document.body.addEventListener("wheel", function(e) {
 	scroll = true;
 	if (zoom.val < 2 && e.deltaY < 0)
 		zoom.val *= 1.25;
-	if (zoom.val > 0.5 && e.deltaY > 0)
+	if (stage.width/width >= 1 && e.deltaY > 0)
 		zoom.val /= 1.25;
 });
 
@@ -341,6 +343,7 @@ function loadTerrain() {
 		width: gridW * grid[0].length,
 		height: gridH * grid.length
 	};
+	zoom.init = stage.width/width;
 }
 
 function loadFog() {
@@ -474,6 +477,8 @@ function render() {
 		document.body.appendChild(renderer.view);
 	}
 
+	console.log(stage.width/width + " " + zoom.init*camera.zoom);
+
 	// Object Position Update
 	update();
 
@@ -561,7 +566,7 @@ function screenZoom() {
 			if (zoom.in && camera.vel.zoom < 0.02)
 				camera.vel.zoom += 0.005;
 		}
-		if (camera.zoom > 0.5) {
+		if (stage.width/width >= 1) {
 			if (zoom.out && camera.vel.zoom > -0.02)
 				camera.vel.zoom -= 0.005;
 		}
@@ -582,6 +587,11 @@ function screenZoom() {
 
 	camera.vel.zoom *= 0.85;
 	camera.zoom += camera.vel.zoom;
+
+	if (zoom.init*camera.zoom <= 1) {
+		camera.zoom = 1/zoom.init;
+		zoom.val = camera.zoom;
+	}
 }
 
 function update() {
