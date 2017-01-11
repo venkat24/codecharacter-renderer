@@ -10,8 +10,9 @@ var stage = new PIXI.Container(),
 	renderer = PIXI.autoDetectRenderer(width, height);
 
 var map,
-	terrain,
-	terrainVisibility,
+	terrain = getTerrain(); // FOR TESTING ONLY.
+	terrainVisibility1 = getVisiblity1(); // FOR TESTING ONLY.
+	terrainVisibility2 = getVisiblity2(); // FOR TESTING ONLY.
 	actorSprites = [],
 	towerSprites = [],
 	flagSprites = [],
@@ -298,7 +299,7 @@ function getTerrain() {
 	];
 }
 
-function getVisiblity() {
+function getVisiblity1() {
 	// below example for testing only
 	// replace with code that reads from simulator
 	return [
@@ -325,9 +326,35 @@ function getVisiblity() {
 	];
 }
 
+function getVisiblity2() {
+	// below example for testing only
+	// replace with code that reads from simulator
+	return [
+		[ 1, 0, 2, 1, 2, 0, 2, 0, 2, 0, 1, 1, 0, 1, 1, 1, 1, 0, 2, 0 ],
+		[ 2, 1, 2, 2, 0, 1, 2, 0, 1, 0, 1, 2, 2, 1, 1, 2, 2, 2, 0, 2 ],
+		[ 2, 2, 0, 1, 2, 1, 1, 1, 1, 2, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0 ],
+		[ 1, 1, 1, 0, 1, 1, 0, 2, 0, 0, 0, 2, 2, 2, 0, 2, 1, 0, 1, 1 ],
+		[ 0, 2, 2, 2, 1, 0, 1, 0, 1, 2, 1, 0, 0, 0, 2, 2, 2, 1, 1, 0 ],
+		[ 2, 2, 2, 1, 1, 1, 1, 1, 2, 0, 2, 0, 0, 1, 2, 2, 2, 2, 2, 1 ],
+		[ 0, 2, 2, 1, 2, 2, 1, 2, 0, 2, 1, 2, 1, 0, 0, 2, 0, 1, 1, 1 ],
+		[ 2, 2, 2, 1, 0, 1, 2, 0, 0, 0, 1, 0, 2, 2, 0, 2, 2, 0, 1, 2 ],
+		[ 1, 2, 0, 2, 1, 2, 0, 0, 2, 0, 1, 2, 1, 1, 0, 2, 1, 0, 0, 1 ],
+		[ 2, 2, 2, 2, 1, 1, 0, 0, 0, 1, 1, 2, 1, 2, 0, 2, 2, 2, 0, 2 ],
+		[ 2, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 1, 0, 0, 2, 0, 2, 1, 2, 1 ],
+		[ 1, 0, 1, 2, 2, 2, 0, 1, 0, 2, 2, 1, 1, 0, 2, 1, 1, 1, 2, 2 ],
+		[ 1, 0, 1, 0, 2, 2, 1, 1, 0, 1, 0, 1, 2, 1, 0, 0, 2, 0, 0, 1 ],
+		[ 2, 2, 2, 2, 0, 1, 2, 0, 0, 2, 2, 2, 1, 0, 2, 2, 0, 2, 1, 1 ],
+		[ 2, 1, 1, 1, 0, 0, 1, 2, 0, 2, 1, 2, 0, 2, 1, 0, 1, 2, 1, 2 ],
+		[ 2, 2, 0, 0, 1, 0, 0, 1, 1, 2, 1, 1, 0, 0, 1, 0, 2, 1, 2, 2 ],
+		[ 2, 1, 2, 1, 2, 1, 2, 0, 1, 1, 1, 0, 2, 0, 2, 2, 2, 0, 2, 1 ],
+		[ 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 2, 2, 0, 2, 1, 1, 2, 0 ],
+		[ 1, 1, 1, 2, 1, 1, 1, 2, 2, 0, 2, 0, 1, 1, 2, 2, 2, 2, 0, 1 ],
+		[ 0, 2, 2, 0, 1, 1, 2, 2, 1, 2, 1, 0, 1, 1, 2, 1, 1, 0, 2, 1 ]
+	];
+}
+
 function loadTerrain() {
-	terrain = getTerrain(); // FOR TESTING ONLY.
-	terrainVisibility = getVisiblity(); // FOR TESTING ONLY.
+	terrainVisibility = terrainVisibility1;
 
 	for (var i = 0; i < terrain.length; i++) {
 		grid[i] = [];
