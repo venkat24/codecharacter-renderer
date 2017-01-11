@@ -1,4 +1,7 @@
 var state = "play";
+var terrainVisibility,
+	terrainVisibility1,
+	terrainVisibility2;
 
 function exit() {
 	window.close();
@@ -22,5 +25,14 @@ function restart() {
 	// ...
 }
 function los() {
+	console.log(terrainVisibility);
+	console.log(terrainVisibility1);
+	console.log(terrainVisibility2);
+	console.log(terrainVisibility == terrainVisibility1);
+	console.log(terrainVisibility == terrainVisibility2);
+
+	if (terrainVisibility == terrainVisibility1)
+		terrainVisibility = terrainVisibility2;
+	else terrainVisibility = terrainVisibility1;
 	// ...
 }
