@@ -10,9 +10,6 @@ var stage = new PIXI.Container(),
 	renderer = PIXI.autoDetectRenderer(width, height);
 
 var map,
-	terrain = getTerrain(); // FOR TESTING ONLY.
-	terrainVisibility1 = getVisiblity1(); // FOR TESTING ONLY.
-	terrainVisibility2 = getVisiblity2(); // FOR TESTING ONLY.
 	actorSprites = [],
 	towerSprites = [],
 	flagSprites = [],
@@ -24,6 +21,11 @@ var map,
 	fog = [],
 	gridW = 204.8,
 	gridH = 204.8;
+
+terrain = getTerrain(); // FOR TESTING ONLY.
+terrainVisibility0 = getVisiblityAll();
+terrainVisibility1 = getVisiblity1(); // FOR TESTING ONLY.
+terrainVisibility2 = getVisiblity2(); // FOR TESTING ONLY.
 
 // ****For Testing Purposes. To Replace with Data Received from Simulator****
 var actors = [
@@ -351,6 +353,18 @@ function getVisiblity2() {
 		[ 1, 1, 1, 2, 1, 1, 1, 2, 2, 0, 2, 0, 1, 1, 2, 2, 2, 2, 0, 1 ],
 		[ 0, 2, 2, 0, 1, 1, 2, 2, 1, 2, 1, 0, 1, 1, 2, 1, 1, 0, 2, 1 ]
 	];
+}
+
+function getVisiblityAll() {
+	var arr = [];
+	for (var i = 0; i < 20; i++) {
+		arr[i] = [];
+		for (var j = 0; j < 20; j++) {
+			arr[i][j] = 2;
+		}
+	}
+
+	return arr;
 }
 
 function loadTerrain() {
