@@ -1,5 +1,7 @@
 var state = "play";
+	losState = 1;
 var terrainVisibility,
+	terrainVisibility0,
 	terrainVisibility1,
 	terrainVisibility2;
 
@@ -25,14 +27,7 @@ function restart() {
 	// ...
 }
 function los() {
-	console.log(terrainVisibility);
-	console.log(terrainVisibility1);
-	console.log(terrainVisibility2);
-	console.log(terrainVisibility == terrainVisibility1);
-	console.log(terrainVisibility == terrainVisibility2);
-
-	if (terrainVisibility == terrainVisibility1)
-		terrainVisibility = terrainVisibility2;
-	else terrainVisibility = terrainVisibility1;
-	// ...
+	losState >= 2 ? losState = 0 : losState++;
+	document.getElementById('losImg').src = `assets/los${losState}.png`;
+	terrainVisibility = eval(`terrainVisibility${losState}`);
 }
