@@ -7,36 +7,49 @@
     <link rel="stylesheet" type="text/css" href="renderer.css">
 </head>
 
-<body>
-    <div class="button" id="exit" onclick="exit()">
-        <div class="container">
-            <img src="assets/close.svg">
-            <div class="description">Close</div>
+<body onload="setTimeout(fadeIn, 500)">
+    <div id="slide-in">
+        <div id="logo-container">
+            <div id="logo">CODE CHARACTER</div>
         </div>
     </div>
-    <div class="button" id="play" onclick="play()">
-        <div class="container">
-            <img id="playSvg" src="assets/pause.svg">
+    <div class="menu-button" id="level1" onclick="switchState()">
+        <div class="button-text">Level 1</div>
+    </div>
+    <div class="menu-button" id="level2" onclick="switchState()">
+        <div class="button-text">Level 2</div>
+    </div>
+
+    <div class="game-button" id="exit" onclick="exit()">
+        <div class="img-container">
+            <img class="button-img" src="assets/close.svg">
+            <div class="description">Exit</div>
+        </div>
+    </div>
+    <div class="game-button" id="play" onclick="play()">
+        <div class="img-container">
+            <img class="button-img" id="playSvg" src="assets/pause.svg">
             <div class="description" id="playDescription">Pause</div>
         </div>
     </div>
-    <div class="button" id="restart" onclick="restart()">
-        <div class="container">
-            <img id="restartSvg" src="assets/restart.png">
+    <div class="game-button" id="restart" onclick="restart()">
+        <div class="img-container">
+            <img class="button-img" id="restartSvg" src="assets/restart.png">
             <div class="description">Restart</div>
         </div>
     </div>
-    <div class="button" id="los" onclick="los()">
-        <div class="container">
-            <img id="losImg" src="assets/los1.png">
+    <div class="game-button" id="los" onclick="los()">
+        <div class="img-container">
+            <img class="button-img" id="losImg" src="assets/los1.png">
             <div class="description">LOS</div>
         </div>
     </div>
+    <div id="fade"></div>
 </body>
 
-<script type="text/javascript" src="buttons.js"></script>
 <script>
-    require('./renderer.js');
     require('./ipc/start.js');
 </script>
+<script type="text/javascript" src="buttons.js"></script>
+<script type="text/javascript" src="renderer.js"></script>
 </html>
