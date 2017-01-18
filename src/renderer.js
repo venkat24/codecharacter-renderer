@@ -9,7 +9,8 @@ var stage = new PIXI.Container(),
 	screen = new PIXI.Container(),
 	renderer = PIXI.autoDetectRenderer(width, height);
 
-var map,
+var menu,
+	map,
 	actorSprites = [],
 	towerSprites = [],
 	flagSprites = [],
@@ -22,10 +23,10 @@ var map,
 	gridW = 204.8,
 	gridH = 204.8;
 
-terrain = getTerrain(); // FOR TESTING ONLY.
-terrainVisibility0 = getVisiblityAll();
-terrainVisibility1 = getVisiblity1(); // FOR TESTING ONLY.
-terrainVisibility2 = getVisiblity2(); // FOR TESTING ONLY.
+var terrain = getTerrain(); // FOR TESTING ONLY.
+	terrainVisibility0 = getVisiblityAll();
+	terrainVisibility1 = getVisiblity1(); // FOR TESTING ONLY.
+	terrainVisibility2 = getVisiblity2(); // FOR TESTING ONLY.
 
 // ****For Testing Purposes. To Replace with Data Received from Simulator****
 var actors = [
@@ -216,7 +217,7 @@ document.body.addEventListener("mousemove", function(e) {
 	if (e.clientX < width * 0.1)
 		left = true;
 	else left = false;
-	if ( !(e.clientX > width - 95 && e.clientY < 330) ) {
+	if ( !(e.clientX > width - 95 && e.clientX < width - 10 && e.clientY < 330) ) {
 		if (e.clientX > width * 0.9)
 			right = true;
 		else right = false;
@@ -232,14 +233,17 @@ document.body.addEventListener("mousemove", function(e) {
 	else down = false;
 });
 document.body.addEventListener("wheel", function(e) {
-	scroll = true;
-	if (zoom.val < 2 && e.deltaY < 0)
-		zoom.val *= 1.25;
-	if (camera.zoom * zoom.init/width >= 1 && e.deltaY > 0)
-		zoom.val /= 1.25;
+	if (state == 3) {
+		scroll = true;
+		if (zoom.val < 2 && e.deltaY < 0)
+			zoom.val *= 1.25;
+		if (camera.zoom * zoom.init/width >= 1 && e.deltaY > 0)
+			zoom.val /= 1.25;
+	}
 });
 
 PIXI.loader
+	.add("menu", "./assets/menu.jpg")
 	.add("forest", "./assets/forest.jpg")
 	.add("plain", "./assets/plains.jpg")
 	.add("mountain", "./assets/mountain.jpg")
@@ -262,6 +266,16 @@ PIXI.loader
 	.load(setup);
 
 function setup() {
+	loadMenu();
+	render();
+}
+
+function loadMenu() {
+	menu = new PIXI.Sprite(PIXI.loader.resources.menu.texture);
+	stage.addChild(menu);
+}
+
+function loadGame() {
 	loadTerrain();
 	loadArrows();
 	loadActors();
@@ -270,8 +284,8 @@ function setup() {
 	loadFog();
 	loadHP();
 	loadBases();
-	spriteSheet(); // FOR TESTING ONLY
-	render();
+	animation(); // FOR TESTING ONLY
+	setTimeout(fadeIn, 500);
 }
 
 function getTerrain() {
@@ -368,7 +382,7 @@ function getVisiblityAll() {
 }
 
 function loadTerrain() {
-	terrainVisibility = terrainVisibility1;
+	terrainVisibility = eval(`terrainVisibility${losState}`);
 
 	for (var i = 0; i < terrain.length; i++) {
 		grid[i] = [];
@@ -389,7 +403,7 @@ function loadTerrain() {
 		width: gridW * grid[0].length,
 		height: gridH * grid.length
 	};
-	zoom.init = stage.width;
+	zoom.init = map.width;
 }
 
 function loadFog() {
@@ -487,7 +501,7 @@ function loadBases() {
 	}
 }
 
-function spriteSheet() {
+function animation() {
 	var base = PIXI.loader.resources.running.texture;
 
 	var textures = [];
@@ -505,17 +519,20 @@ function spriteSheet() {
 	stage.addChild(spriteSheet);
 }
 
+function fadeIn() {
+	fade.style.zIndex = -10;
+	fade.style.opacity = 0;
+
+	// TO BE CHANGED AFTER INTEGRATION
+	camera.x = 0;
+	camera.y = 0;
+	camera.zoom = 0.6;
+	zoom.val = 0.6;
+}
+
 function render() {
 	// Initial variable update before each frame is rendered
 	init();
-
-	// For animation testing purposes
-	test();
-
-	// Panning and Zooming Functionality
-	screenPosition();
-	screenZoom();
-	stage.setTransform(camera.zoom * camera.x, camera.zoom * camera.y, camera.zoom, camera.zoom);
 
 	// Dynamic Resizing
 	if (renderer.width != width || renderer.height != height) {
@@ -523,8 +540,24 @@ function render() {
 		document.body.appendChild(renderer.view);
 	}
 
-	// Object Position Update
-	update();
+	if (state == 1) {
+		menu.width = width;
+		menu.height = height;
+		stage.setTransform(0, 0, 1, 1);
+	}
+
+	if(state == 3) {
+		// For animation testing purposes
+		test();
+
+		// Panning and Zooming Functionality
+		screenPosition();
+		screenZoom();
+		stage.setTransform(camera.zoom * camera.x, camera.zoom * camera.y, camera.zoom, camera.zoom);
+
+		// Object Position Update
+		update();
+	}
 
 	renderer.render(stage);
 	requestAnimationFrame(render);
@@ -533,17 +566,20 @@ function render() {
 function init() {
 	width = window.innerWidth;
 	height = window.innerHeight;
-	map.x = grid[0][0].x;
-	map.y = grid[0][0].y;
 
-	for (var i = 0; i < actors.length; i++) {
-		findCenter(actors[i], actorSprites[i]);
-	}
-	for (var i = 0; i < towers.length; i++) {
-		findCenter(towers[i], towerSprites[i]);
-	}
-	for (var i = 0; i < arrows.length; i++) {
-		findCenter(arrows[i], arrowSprites[i]);
+	if (state == 3) {
+		map.x = grid[0][0].x;
+		map.y = grid[0][0].y;
+
+		for (var i = 0; i < actors.length; i++) {
+			findCenter(actors[i], actorSprites[i]);
+		}
+		for (var i = 0; i < towers.length; i++) {
+			findCenter(towers[i], towerSprites[i]);
+		}
+		for (var i = 0; i < arrows.length; i++) {
+			findCenter(arrows[i], arrowSprites[i]);
+		}
 	}
 }
 
@@ -720,11 +756,20 @@ function update() {
 	}
 
 	// FOR TESTING ONLY
-	spriteSheet.setTransform(animatedSprite.x + change.x, animatedSprite.y + change.y, 1.25, 1.25);
+	if(spriteSheet)
+		spriteSheet.setTransform(animatedSprite.x + change.x, animatedSprite.y + change.y, 1.25, 1.25);
 }
 
 function visibility(object) {
 	var x = Math.floor(object.center.x / gridW),
 		y = Math.floor(object.center.y / gridH);
 	return terrainVisibility[x][y];
+}
+
+function endGame() {
+	while (stage.children.length > 1) {
+		n = stage.getChildAt(1);
+		stage.removeChild(n);
+	}
+	setTimeout(fadeIn, 500);
 }
