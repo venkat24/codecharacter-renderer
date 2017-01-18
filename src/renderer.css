@@ -1,6 +1,7 @@
 html, body {
   position: fixed;
   overflow: hidden;
+  -webkit-user-select: none;
 }
 
 html, body, canvas {
@@ -12,15 +13,89 @@ body {
   width: 100%;
 }
 
-img {
+div#slide-in {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  animation: slide-in 3s ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+div#logo-container {
+  position: absolute;
+  left: 50%;
+  bottom: -30%;
+}
+
+div#logo {
+  position: relative;
+  left: -50%;
+  font-size: 2.5em;
+  cursor: default;
+}
+
+@keyframes slide-in {
+/*  70% {bottom: 50%; left: 50%;}
+  100% {bottom: 50%; left: 20%;}*/
+  70% {transform: translate(0%, -80%);}
+  100% {transform: translate(-20%, -80%);}
+}
+
+div.menu-button {
+  position: fixed;
+  width: 10%;
+  box-shadow: 0px 3px 10px #111111, 0px 10px 50px #333333;
+  right: calc(30% - 100px);
+  padding: 20px;
+  background-color: #028948;
+  transition: 0.1s;
+  text-align: center;
+  cursor: pointer;
+  animation: fade-in 1s ease-out;
+  animation-fill-mode: forwards;
+  opacity: 0;
+  transform: scale(0.9, 0.9);
+  transition: 0.2s;
+}
+
+#level1 {
+  bottom: 20%;
+  animation-delay: 2.5s;
+}
+
+#level2 {
+  bottom: 35%;
+  animation-delay: 2.7s;
+}
+
+.button-text {
+  font-weight: bold;
+}
+
+.menu-button:hover {
+  box-shadow: 0px 5px 20px #111111, 0px 15px 70px #333333;
+}
+
+.menu-button:active {
+  background-color: #026B39;
+  box-shadow: 0px 2px 10px #111111;
+}
+
+@keyframes fade-in {
+  from {opacity: 0; transform: scale(0.9, 0.9);}
+  to {opacity: 1; transform: scale(1, 1);}
+}
+
+.button-img {
   position: absolute;
   left: -50%;
   top: -50%;
   width: 55px;
   height: 55px;
+  -webkit-user-drag: none;
 }
 
-div.container {
+div.img-container {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -41,7 +116,7 @@ div.description {
   transition: 0.2s;
 }
 
-div.button {
+div.game-button {
   position: fixed;
   width: 15px;
   height: 15px;
@@ -53,18 +128,18 @@ div.button {
   transition: 0.1s;
   text-align: center;
   cursor: pointer;
-  text-align: center;
+  visibility: hidden;
 }
 
-.button:hover {
+.game-button:hover {
   box-shadow: 0px 5px 20px #111111, 0px 15px 70px #333333;
 }
 
-.button:active {
+.game-button:active {
   box-shadow: 0px 2px 10px #111111;
 }
 
-.button:hover .description {
+.game-button:hover .description {
   opacity: 0.7;
 }
 
@@ -81,7 +156,6 @@ div#play {
 div#restart {
   top: 170px;
   background-color: #3f89ff;
-  /*background-color: #028948;*/
 }
 
 div#los {
@@ -99,9 +173,18 @@ div#los {
 
 #restart:active {
   background-color: #2C62B8;
-  /*background-color: #026B39;*/
 }
 
 #los:active {
   background-color: #6e6e6e;
+}
+
+div#fade {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  background-color: black;
+  opacity: 1;
+  transition: 0.5s;
 }
