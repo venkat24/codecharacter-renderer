@@ -11,6 +11,8 @@ var stage = new PIXI.Container(),
 
 var menu,
 	map,
+	storyCount = 1,
+	storyTransition = false,
 	actorSprites = [],
 	towerSprites = [],
 	flagSprites = [],
@@ -24,9 +26,7 @@ var menu,
 	gridH = 204.8;
 
 var terrain = getTerrain(); // FOR TESTING ONLY.
-	terrainVisibility0 = getVisiblityAll();
-	terrainVisibility1 = getVisiblity1(); // FOR TESTING ONLY.
-	terrainVisibility2 = getVisiblity2(); // FOR TESTING ONLY.
+	visibilityArray = [getVisiblityAll(), getVisiblity1(), getVisiblity2()]; // FOR TESTING ONLY
 
 // ****For Testing Purposes. To Replace with Data Received from Simulator****
 var actors = [
@@ -241,9 +241,50 @@ document.body.addEventListener("wheel", function(e) {
 			zoom.val /= 1.25;
 	}
 });
+document.body.addEventListener("mousedown", function(e) {
+	if (state == 2) {
+		if (!storyTransition && e.button === 0) {
+			if (storyCount < 14) {
+				storyCount++;
+				nextImg();
+			}
+			else startGame();
+		} else if (e.button == 2) {
+			startGame();
+		}
+	}
+});
+
+function nextImg() {
+	fade.style.zIndex = 10;
+	fade.style.opacity = 1;
+	storyTransition = true;
+	setTimeout(function() {
+		story.texture = PIXI.loader.resources["./assets/story/" + storyCount + ".jpg"].texture;
+		storyTransition = false;
+		fade.style.zIndex = -10;
+		fade.style.opacity = 0;
+	}, 500);
+}
 
 PIXI.loader
 	.add("menu", "./assets/menu.jpg")
+	// **THE FOLLOWING 16 TEXTURES ARE PART OF THE TEST STORY TO BE REMOVED LATER.**
+	.add("./assets/story/1.jpg")
+	.add("./assets/story/2.jpg")
+	.add("./assets/story/3.jpg")
+	.add("./assets/story/4.jpg")
+	.add("./assets/story/5.jpg")
+	.add("./assets/story/6.jpg")
+	.add("./assets/story/7.jpg")
+	.add("./assets/story/8.jpg")
+	.add("./assets/story/9.jpg")
+	.add("./assets/story/10.jpg")
+	.add("./assets/story/11.jpg")
+	.add("./assets/story/12.jpg")
+	.add("./assets/story/13.jpg")
+	.add("./assets/story/14.jpg")
+	// **..**
 	.add("forest", "./assets/forest.jpg")
 	.add("plain", "./assets/plains.jpg")
 	.add("mountain", "./assets/mountain.jpg")
@@ -273,6 +314,13 @@ function setup() {
 function loadMenu() {
 	menu = new PIXI.Sprite(PIXI.loader.resources.menu.texture);
 	stage.addChild(menu);
+}
+
+function loadStory() {
+	fadeIn();
+	storyCount = 1;
+	story = new PIXI.Sprite(PIXI.loader.resources["./assets/story/1.jpg"].texture);
+	stage.addChild(story);
 }
 
 function loadGame() {
@@ -382,7 +430,7 @@ function getVisiblityAll() {
 }
 
 function loadTerrain() {
-	terrainVisibility = eval(`terrainVisibility${losState}`);
+	terrainVisibility = visibilityArray[1];
 
 	for (var i = 0; i < terrain.length; i++) {
 		grid[i] = [];
