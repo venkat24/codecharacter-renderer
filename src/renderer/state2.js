@@ -1,5 +1,8 @@
+var storyCount = 1,
+	storyTransition = false;
+
 function loadStory() {
-	fadeIn();
+	setTimeout(fadeIn, 500);
 	storyCount = 1;
 	story = new PIXI.Sprite(PIXI.loader.resources["./assets/story/1.jpg"].texture);
 	stage.addChild(story);
