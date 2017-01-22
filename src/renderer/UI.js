@@ -1,3 +1,135 @@
+var up = false,
+	down = false,
+	left = false,
+	right = false,
+	scroll = false,
+	zoom = {
+		in: false,
+		out: false,
+		val: 0.6,
+		init: 0
+	};
+
+var userConsole = document.getElementById('console'),
+	consoleMessages = document.getElementById('messages'),
+	message,
+	messages = [];
+
+var camera = {
+	x: 0,
+	y: 0,
+	vel: {
+		x: 0,
+		y: 0,
+		zoom: 0
+	},
+	zoom: 0.6
+};
+
+document.body.addEventListener("keydown", function(e) {
+	if (e.keyCode == 37) {
+		left = true;
+	}
+	if (e.keyCode == 38) {
+		up = true;
+	}
+	if (e.keyCode == 39) {
+		right = true;
+	}
+	if (e.keyCode == 40) {
+		down = true;
+	}
+	if (e.keyCode == 187) {
+		zoom.in = true;
+	}
+	if (e.keyCode == 189) {
+		zoom.out = true;
+	}
+	if (e.ctrlKey) {
+		if (e.keyCode == 67) {
+			if(userConsole.style.opacity == 0) {
+				userConsole.style.zIndex = 75;
+				userConsole.style.opacity = 0.6;
+			}
+			else {
+				userConsole.style.opacity = 0;
+				setTimeout(function() {userConsole.style.zIndex = -75}, 200);
+			}
+		}
+		if (e.keyCode == 76) {
+			userConsole.innerHTML = "<ul id='messages'></ul>";
+			consoleMessages = document.getElementById('messages');
+			message = null;
+			messages = [];
+		}
+		if (e.keyCode == 70) {
+			if (userConsole.style.width != "100%")
+				userConsole.style.width = "100%";
+			else userConsole.style.width = "25%";
+		}
+	}
+});
+document.body.addEventListener("keyup", function (e) {
+	if (e.keyCode == 37) {
+		left = false;
+	}
+	if (e.keyCode == 38) {
+		up = false;
+	}
+	if (e.keyCode == 39) {
+		right = false;
+	}
+	if (e.keyCode == 40) {
+		down = false;
+	}
+	if (e.keyCode == 187) {
+		zoom.in = false;
+	}
+	if (e.keyCode == 189) {
+		zoom.out = false;
+	}
+});
+document.body.addEventListener("mousemove", function(e) {
+	if (e.clientX < width * 0.1)
+		left = true;
+	else left = false;
+	if ( !(e.clientX > width - 95 && e.clientX < width - 10 && e.clientY < 330) ) {
+		if (e.clientX > width * 0.9)
+			right = true;
+		else right = false;
+		if (e.clientY < height * 0.1)
+			up = true;
+		else up = false;
+	} else {
+		right = false;
+		up = false;
+	}
+	if (e.clientY > height * 0.9)
+		down = true;
+	else down = false;
+});
+document.body.addEventListener("wheel", function(e) {
+	if (state == 3) {
+		scroll = true;
+		if (zoom.val < 2 && e.deltaY < 0)
+			zoom.val *= 1.25;
+		if (camera.zoom * zoom.init/width >= 1 && e.deltaY > 0)
+			zoom.val /= 1.25;
+	}
+});
+document.body.addEventListener("mousedown", function(e) {
+	if (state == 2) {
+		if (!storyTransition && e.button === 0) {
+			if (storyCount < 14) {
+				storyCount++;
+				nextImg();
+			}
+			else startGame();
+		} else if (e.button == 2) {
+			startGame();
+		}
+	}
+});
 
 function screenPosition() {
 	if ( !(up && down) ) {

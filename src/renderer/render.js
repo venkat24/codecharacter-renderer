@@ -8,6 +8,9 @@ function render() {
 		document.body.appendChild(renderer.view);
 	}
 
+	// Console Update
+	consoleUpdate();
+
 	if (state == 1) {
 		menu.width = width;
 		menu.height = height;
@@ -31,6 +34,13 @@ function render() {
 	requestAnimationFrame(render);
 }
 
+function consoleUpdate() {
+	if ((message && !messages.length) || message != messages[messages.length-1]) {
+		messages.push(message);
+		consoleMessages.innerHTML += "<li>" + message + "</li>";
+	}
+}
+
 function init() {
 	width = window.innerWidth;
 	height = window.innerHeight;
@@ -45,8 +55,8 @@ function init() {
 		for (var i = 0; i < towers.length; i++) {
 			findCenter(towers[i], towerSprites[i]);
 		}
-		for (var i = 0; i < arrows.length; i++) {
-			findCenter(arrows[i], arrowSprites[i]);
+		for (var i = 0; i < fireBalls.length; i++) {
+			findCenter(fireBalls[i], fireBallSprites[i]);
 		}
 	}
 }
@@ -135,11 +145,11 @@ function update() {
 	for (var i = 0; i < flagSprites.length; i++) {
 		flagSprites[i].setTransform(flags[i].x + change.x, flags[i].y + change.y);
 	}
-	for (var i = 0; i < arrowSprites.length; i++) {
-		arrowSprites[i].setTransform(arrows[i].x + change.x, arrows[i].y + change.y, 1, 1, arrows[i].rotation);
-		if (visibility(arrows[i]) == 2)
-			arrowSprites[i].visible = true;
-		else arrowSprites[i].visible = false;
+	for (var i = 0; i < fireBallSprites.length; i++) {
+		fireBallSprites[i].setTransform(fireBalls[i].x + change.x, fireBalls[i].y + change.y, 1, 1, fireBalls[i].rotation);
+		if (visibility(fireBalls[i]) == 2)
+			fireBallSprites[i].visible = true;
+		else fireBallSprites[i].visible = false;
 	}
 	for (var i = 0; i < baseSprites.length; i++) {
 		baseSprites[i].setTransform(bases[i].x + change.x - 102, bases[i].y + change.y - 102);
