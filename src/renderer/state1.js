@@ -1,3 +1,5 @@
+var menu;
+
 function setup() {
 	loadMenu();
 	render();
