@@ -1,6 +1,143 @@
+var map,
+	actorSprites = [],
+	towerSprites = [],
+	flagSprites = [],
+	fireBallSprites = [],
+	baseSprites = [],
+	actorHP = [],
+	towerHP = [],
+	grid = [],
+	fog = [],
+	gridW = 204.8,
+	gridH = 204.8;
+
+var terrain = getTerrain(); // FOR TESTING ONLY.
+	visibilityArray = [getVisiblityAll(), getVisiblity1(), getVisiblity2()]; // FOR TESTING ONLY
+
+// ****For Testing Purposes. To Replace with Data Received from Simulator****
+var actors = [
+	{
+		id: 0,
+		x: 100,
+		y: 15
+	},
+	{
+		id: 1,
+		x: 200,
+		y: 200
+	},
+	{
+		id: 2,
+		x: 1300,
+		y: 100,
+		actorType: 'sword',
+		attack: false,
+		playerID: 2,
+		HP: 40,
+		maxHP: 200
+	},
+	{
+		id: 3,
+		x: 750,
+		y: 650,
+		actorType: 'sword',
+		attack: true,
+		playerID: 1,
+		HP: 200,
+		maxHP: 200
+	},
+	{
+		id: 4,
+		x: 250,
+		y: 850,
+		actorType: 'king',
+		playerID: 1,
+		HP: 300,
+		maxHP: 800
+	}
+];
+
+var towers = [
+	{
+		id: 1,
+		x: 200,
+		y: 500,
+		playerID: 0,
+		HP: 5000,
+		maxHP: 5000
+	},
+	{
+		id: 2,
+		x: 1200,
+		y: 200,
+		playerID: 1,
+		HP: 2000,
+		maxHP: 5000
+	},
+	{
+		id: 3,
+		x: 390,
+		y: 500,
+		playerID: 2,
+		HP: 4000,
+		maxHP: 5000
+	},
+
+];
+
+var flags = [
+	{
+		id: 1,
+		x: 1300,
+		y: 700,
+		playerID: 1
+	},
+	{
+		id: 2,
+		x: 600,
+		y: 10,
+		playerID: 2
+	},
+];
+
+var fireBalls = [
+	{
+		id: 1,
+		x: 470,
+		y: 500,
+		rotation: -Math.PI/5
+	}
+];
+
+var bases = [
+	{
+		playerID: 1,
+		x: 306,
+		y: 717
+	},
+	{
+		playerID: 2,
+		x: 1945,
+		y: 716
+	}
+];
+
+// **FOR TESTING ONLY. All actors will be drawn with spritesheet animations in the final version**
+var spriteSheet;
+var animatedSprite = {
+	x: 900,
+	y: 200
+};
+// **..**
+
+// ****...****
+
+// For animation testing purposes
+var temp = 0;
+
 function loadGame() {
 	loadTerrain();
-	loadArrows();
+	loadFireBalls();
 	loadActors();
 	loadTowers();
 	loadFlags();
@@ -147,8 +284,8 @@ function loadActors() {
 				actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.sword.texture);
 			else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.attack.texture);
 		}
-		// else if (actors[i].actorType == 'archer')
-		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.archer.texture);
+		// else if (actors[i].actorType == 'magician')
+		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.magician.texture);
 		// else if (actors[i].actorType == 'cavalry')
 		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.cavalry.texture);
 		else if (actors[i].actorType == 'king')
@@ -205,13 +342,13 @@ function loadFlags() {
 	}
 }
 
-function loadArrows() {
-	for (var i = 0; i < arrows.length; i++) {
-		arrowSprites[i] = new PIXI.Sprite(PIXI.loader.resources.arrow.texture);
+function loadFireBalls() {
+	for (var i = 0; i < fireBalls.length; i++) {
+		fireBallSprites[i] = new PIXI.Sprite(PIXI.loader.resources.fireBall.texture);
 
-		arrows[i].center = {};
-		arrowSprites[i].setTransform(arrows[i].x, arrows[i].y, 1, 1, arrows[i].rotation);
-		stage.addChild(arrowSprites[i]);
+		fireBalls[i].center = {};
+		fireBallSprites[i].setTransform(fireBalls[i].x, fireBalls[i].y, 1, 1, fireBalls[i].rotation);
+		stage.addChild(fireBallSprites[i]);
 	}
 }
 
