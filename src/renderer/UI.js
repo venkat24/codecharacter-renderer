@@ -12,8 +12,7 @@ var up = false,
 
 var userConsole = document.getElementById('console'),
 	consoleMessages = document.getElementById('messages'),
-	message,
-	messages = [];
+	message;
 
 var camera = {
 	x: 0,
@@ -58,10 +57,7 @@ document.body.addEventListener("keydown", function(e) {
 		}
 		if (e.keyCode == 76) {
 			userConsole.innerHTML = "<ul id='messages'></ul>";
-			consoleMessages = document.getElementById('messages');
-			message = null;
-			messages = [];
-		}
+			consoleMessages = document.getElementById('messages');		}
 		if (e.keyCode == 70) {
 			if (userConsole.style.width != "100%")
 				userConsole.style.width = "100%";
