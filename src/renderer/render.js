@@ -35,9 +35,9 @@ function render() {
 }
 
 function consoleUpdate() {
-	if ((message && !messages.length) || message != messages[messages.length-1]) {
-		messages.push(message);
+	if (message !== null) {
 		consoleMessages.innerHTML += "<li>" + message + "</li>";
+		message = null;
 	}
 }
 
