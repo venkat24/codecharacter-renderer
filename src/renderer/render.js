@@ -62,6 +62,7 @@ function init() {
 }
 
 function findCenter(object, sprite) {
+	console.log(object.x + " .. " + sprite.width/2);
 	object.center.x = object.x + sprite.width/2;
 	object.center.y = object.y + sprite.height/2;
 }
