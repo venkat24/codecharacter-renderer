@@ -1,3 +1,45 @@
+var protobuf = require('protobufjs');
+var path = require('path');
+var spawn = require('child_process').spawn;
+var child = spawn('./src/test/ipc');
+var decoded;
+
+// function listen() {
+	// console.log('listening');
+	child.stdout.on('data', (data) => {
+		protobuf.load('./src/test/state.proto', function(err, root) {
+
+			a = root.lookup("IPC.State");
+			decoded = a.decode(data);
+			// for(var actor of decoded.actors)
+			// 	for(var id in actor)
+			// 		actor[id]=actor[id].toString();
+			console.log(decoded.actors);
+			setArrays();
+			// listen();
+		});
+	});
+// }
+
+// listen();
+
+actors = [];
+
+function setArrays() {
+	for (var i = 0; i < decoded.actors.length; i++) {
+		actors[i] = {};
+		for (var j in decoded.actors[i]) {
+			if (typeof(decoded.actors[i][j]) == "boolean")
+				actors[i][j] = decoded.actors[i][j];
+			else actors[i][j] = decoded.actors[i][j].low;
+		}
+		actors[i].x = actors[i].posX;
+		actors[i].y = actors[i].posY;
+	}
+	console.log(actors);
+}
+
+
 var map,
 	actorSprites = [],
 	towerSprites = [],
@@ -15,47 +57,47 @@ var terrain = getTerrain(); // FOR TESTING ONLY.
 	visibilityArray = [getVisiblityAll(), getVisiblity1(), getVisiblity2()]; // FOR TESTING ONLY
 
 // ****For Testing Purposes. To Replace with Data Received from Simulator****
-var actors = [
-	{
-		id: 0,
-		x: 100,
-		y: 15
-	},
-	{
-		id: 1,
-		x: 200,
-		y: 200
-	},
-	{
-		id: 2,
-		x: 1300,
-		y: 100,
-		actorType: 'sword',
-		attack: false,
-		playerID: 2,
-		HP: 40,
-		maxHP: 200
-	},
-	{
-		id: 3,
-		x: 750,
-		y: 650,
-		actorType: 'sword',
-		attack: true,
-		playerID: 1,
-		HP: 200,
-		maxHP: 200
-	},
-	{
-		id: 4,
-		x: 250,
-		y: 850,
-		actorType: 'king',
-		playerID: 1,
-		HP: 300,
-		maxHP: 800
-	}
-];
+// var actors = [
+// 	{
+// 		id: 0,
+// 		x: 100,
+// 		y: 15
+// 	},
+// 	{
+// 		id: 1,
+// 		x: 200,
+// 		y: 200
+// 	},
+// 	{
+// 		id: 2,
+// 		x: 1300,
+// 		y: 100,
+// 		actorType: 'sword',
+// 		attack: false,
+// 		playerID: 2,
+// 		HP: 40,
+// 		maxHP: 200
+// 	},
+// 	{
+// 		id: 3,
+// 		x: 750,
+// 		y: 650,
+// 		actorType: 'sword',
+// 		attack: true,
+// 		playerID: 1,
+// 		HP: 200,
+// 		maxHP: 200
+// 	},
+// 	{
+// 		id: 4,
+// 		x: 250,
+// 		y: 850,
+// 		actorType: 'king',
+// 		playerID: 1,
+// 		HP: 300,
+// 		maxHP: 800
+// 	}
+// ];
 
 var towers = [
 	{
