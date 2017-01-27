@@ -87,4 +87,5 @@ message State {
 	 * Expects a 2D array of LOSElements
 	 */
 	LOS player2_los = 3;
+	int64 number = 4;
 }
