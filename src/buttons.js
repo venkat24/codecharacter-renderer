@@ -15,6 +15,9 @@ function exit() {
 			menu.visible = true;
 		}, 500);
 	}
+	// child.stdin.setEncoding('binary');
+	// child.stdin.write("console.log('Hello from PhantomJS')\n");
+	// child.stdin.end();
 }
 
 function play() {
@@ -27,7 +30,9 @@ function play() {
 		document.getElementById('playDescription').innerHTML = 'Pause';
 		gameState = "play";
 	}
-	// ...
+	// child.stdin.setEncoding('binary');
+	// child.stdin.write("console.log('Hello from PhantomJS')\n");
+	// child.stdin.end();
 }
 
 function restart() {
@@ -43,7 +48,9 @@ function restart() {
 			loadGame();
 		}, 500);
 	}
-	// ...
+	// child.stdin.setEncoding('binary');
+	// child.stdin.write("console.log('Hello from PhantomJS')\n");
+	// child.stdin.end();
 }
 
 function los() {
@@ -88,6 +95,9 @@ function startGame() {
 			loadGame();
 		}, 500);
 	}
+	// child.stdin.setEncoding('binary');
+	// child.stdin.write("console.log('Hello from PhantomJS')\n");
+	// child.stdin.end();	
 }
 
 function visiblitityChange() {

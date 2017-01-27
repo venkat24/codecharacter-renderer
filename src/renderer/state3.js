@@ -3,27 +3,35 @@ var path = require('path');
 var spawn = require('child_process').spawn;
 var child = spawn('./src/test/ipc');
 var decoded;
-
-// function listen() {
-	// console.log('listening');
-	child.stdout.on('data', (data) => {
-		protobuf.load('./src/test/state.proto', function(err, root) {
-
-			a = root.lookup("IPC.State");
-			decoded = a.decode(data);
-			// for(var actor of decoded.actors)
-			// 	for(var id in actor)
-			// 		actor[id]=actor[id].toString();
-			console.log(decoded.actors);
-			setArrays();
-			// listen();
-		});
-	});
-// }
-
-// listen();
+var x = 396;
+// var visibilityArray = [ , , getVisiblityAll()];
 
 actors = [];
+
+child.stdout.on('data', (data) => {
+	console.log(data);
+	protobuf.load('./src/test/state.proto', function(err, root) {
+		a = root.lookup("IPC.State");
+		// decode(data, a);
+		// decoded = a.decode(data);
+		// // for(var actor of decoded.actors)
+		// // 	for(var id in actor)
+		// // 		actor[id]=actor[id].toString();
+		// // console.log(decoded.actors);
+		// console.log(decoded.actors[0].posX.toString());
+		// setArrays();
+	});
+});
+// child.on('close', (code) => listen());
+
+function decode(data, a) {
+	decoded = a.decode(data);
+	if (decoded.actors[0].posX.low - x > 1)
+		console.log(decoded.actors[0].posX.toString() + " ...... Skiped..." + x );
+	x = decoded.actors[0].posX.low;
+	setArrays();
+}
+
 
 function setArrays() {
 	for (var i = 0; i < decoded.actors.length; i++) {
@@ -35,10 +43,26 @@ function setArrays() {
 		}
 		actors[i].x = actors[i].posX;
 		actors[i].y = actors[i].posY;
+		actors[i].center = {};
 	}
-	console.log(actors);
-}
 
+	if (actors.length > decoded.number.low)
+		actors.splice(decoded.number.low, actors.length - decoded.number.low);
+
+	terrainVisibility1 = [];
+	terrainVisibility2 = [];
+	for (var i = 0; i < 20; i++) {
+		terrainVisibility1[i] = [];
+		terrainVisibility2[i] = [];
+		for (var j = 0; j < 20; j++) {
+			terrainVisibility1[i][j] = decoded.player1Los.grid[i].losElement[j];
+			terrainVisibility2[i][j] = decoded.player2Los.grid[i].losElement[j];
+		}
+	}
+
+	// visibilityArray[0] = terrainVisibility1;
+	// visibilityArray[1] = terrainVisibility2;
+}
 
 var map,
 	actorSprites = [],
