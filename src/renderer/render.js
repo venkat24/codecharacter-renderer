@@ -19,13 +19,17 @@ function render() {
 
 	if(state == 3) {
 		// For animation testing purposes
-		test();
 
 		// Panning and Zooming Functionality
 		screenPosition();
 		screenZoom();
 		stage.setTransform(camera.zoom * camera.x, camera.zoom * camera.y, camera.zoom, camera.zoom);
 
+		if (temp < 50) {
+			test();
+			// console.log(actors);
+		}
+		
 		// Object Position Update
 		update();
 	}
@@ -62,17 +66,16 @@ function init() {
 }
 
 function findCenter(object, sprite) {
-	console.log(object.x + " .. " + sprite.width/2);
 	object.center.x = object.x + sprite.width/2;
 	object.center.y = object.y + sprite.height/2;
 }
 
 function test() {
 	temp ++;
-	for (var i = 0; i < actors.length; i++) {
-		if (!actors[i].actorType)
-			actors[i].x += 5 * Math.sin(temp/25);
-	}
+	// for (var i = 0; i < actors.length; i++) {
+	// 	if (!actors[i].actorType)
+	// 		actors[i].x += 5 * Math.sin(temp/25);
+	// }
 }
 
 function update() {
