@@ -15,9 +15,21 @@ function exit() {
 			menu.visible = true;
 		}, 500);
 	}
-	// child.stdin.setEncoding('binary');
-	// child.stdin.write("console.log('Hello from PhantomJS')\n");
-	// child.stdin.end();
+
+	protobuf.load("./src/test/interrupts.proto", function(err, root) {
+	    if (err) throw err;
+
+	    var Interrupts = root.lookup("IPC.Interrupts");
+	    var message = Interrupts.create({ exitStatus: {value: false} });
+	    console.log(message);
+	    var buffer = Interrupts.encode(message).finish();
+	    console.log(buffer);
+
+	    decodedMessage = Interrupts.decode(buffer);
+	    console.log(decodedMessage);
+
+		child.stdin.write(buffer + "\n");
+	});
 }
 
 function play() {
@@ -30,9 +42,21 @@ function play() {
 		document.getElementById('playDescription').innerHTML = 'Pause';
 		gameState = "play";
 	}
-	// child.stdin.setEncoding('binary');
-	// child.stdin.write("console.log('Hello from PhantomJS')\n");
-	// child.stdin.end();
+
+	protobuf.load("./src/test/interrupts.proto", function(err, root) {
+	    if (err) throw err;
+
+	    var Interrupts = root.lookup("IPC.Interrupts");
+	    var message = Interrupts.create({ playStatus: {value: false} });
+	    console.log(message);
+	    var buffer = Interrupts.encode(message).finish();
+	    console.log(buffer);
+
+	    decodedMessage = Interrupts.decode(buffer);
+	    console.log(decodedMessage);
+
+		child.stdin.write(buffer + "\n");
+	});
 }
 
 function restart() {
@@ -48,9 +72,21 @@ function restart() {
 			loadGame();
 		}, 500);
 	}
-	// child.stdin.setEncoding('binary');
-	// child.stdin.write("console.log('Hello from PhantomJS')\n");
-	// child.stdin.end();
+
+	protobuf.load("./src/test/interrupts.proto", function(err, root) {
+	    if (err) throw err;
+
+	    var Interrupts = root.lookup("IPC.Interrupts");
+	    var message = Interrupts.create({ restartStatus: {value: false} });
+	    console.log(message);
+	    var buffer = Interrupts.encode(message).finish();
+	    console.log(buffer);
+
+	    decodedMessage = Interrupts.decode(buffer);
+	    console.log(decodedMessage);
+
+		child.stdin.write(buffer + "\n");
+	});
 }
 
 function los() {
@@ -95,9 +131,21 @@ function startGame() {
 			loadGame();
 		}, 500);
 	}
-	// child.stdin.setEncoding('binary');
-	// child.stdin.write("console.log('Hello from PhantomJS')\n");
-	// child.stdin.end();	
+
+	protobuf.load("./src/test/interrupts.proto", function(err, root) {
+	    if (err) throw err;
+
+	    var Interrupts = root.lookup("IPC.Interrupts");
+	    var message = Interrupts.create({ playStatus: {value: false} });
+	    console.log(message);
+	    var buffer = Interrupts.encode(message).finish();
+	    console.log(buffer);
+
+	    decodedMessage = Interrupts.decode(buffer);
+	    console.log(decodedMessage);
+
+		child.stdin.write(buffer + "\n");
+	});
 }
 
 function visiblitityChange() {
