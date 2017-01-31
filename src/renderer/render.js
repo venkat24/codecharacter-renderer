@@ -11,13 +11,13 @@ function render() {
 	// Console Update
 	consoleUpdate();
 
-	if (state == 1) {
+	if (rendererState == 1) {
 		menu.width = width;
 		menu.height = height;
 		stage.setTransform(0, 0, 1, 1);
 	}
 
-	if(state == 3) {
+	if(rendererState == 3) {
 		// For animation testing purposes
 
 		// Panning and Zooming Functionality
@@ -49,7 +49,7 @@ function init() {
 	width = window.innerWidth;
 	height = window.innerHeight;
 
-	if (state == 3) {
+	if (rendererState == 3) {
 		map.x = grid[0][0].x;
 		map.y = grid[0][0].y;
 
