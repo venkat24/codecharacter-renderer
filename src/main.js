@@ -3,6 +3,7 @@ const electron = require('electron')
 const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
+const ipcMain = require('electron').ipcMain
 
 const path = require('path')
 const url = require('url')
@@ -10,6 +11,7 @@ const url = require('url')
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+let childId
 
 function createWindow () {
   // Create the browser window.
@@ -30,6 +32,7 @@ function createWindow () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
+    process.kill(childId)
     mainWindow = null
   })
 }
@@ -44,6 +47,7 @@ app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
+    process.kill(childId)
     app.quit()
   }
 })
@@ -58,3 +62,7 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+ipcMain.on('pid-message', function(event, pid) {
+  childId = pid
+  // childIds.push(pid);
+});

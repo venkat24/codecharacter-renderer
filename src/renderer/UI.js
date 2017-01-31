@@ -111,7 +111,7 @@ document.body.addEventListener("wheel", function(e) {
 	if(e.deltaY % 1 !== 0) {
 		e.preventDefault();
 	}
-	if (state == 3) {
+	if (rendererState == 3) {
 		scroll = true;
 		if (zoom.val < 2 && e.deltaY < 0)
 			zoom.val *= 1.25;
@@ -120,7 +120,7 @@ document.body.addEventListener("wheel", function(e) {
 	}
 });
 document.body.addEventListener("mousedown", function(e) {
-	if (state == 2) {
+	if (rendererState == 2) {
 		if (!storyTransition && e.button === 0) {
 			if (storyCount < 14) {
 				storyCount++;
