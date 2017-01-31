@@ -1,15 +1,15 @@
-var state = 1,
+var rendererState = 1,
 	gameState = "play",
 	losState = 1;
 	fade = document.getElementById("fade");
 
 function exit() {
-	if (state == 3) {
+	if (rendererState == 3) {
 		fade.style.zIndex = 10;
 		fade.style.opacity = 1;
 
 		setTimeout(function() {
-			state = 1;
+			rendererState = 1;
 			endGame();
 			visiblitityChange();
 			menu.visible = true;
@@ -21,14 +21,10 @@ function exit() {
 
 	    var Interrupts = root.lookup("IPC.Interrupts");
 	    var message = Interrupts.create({ exitStatus: {value: false} });
-	    console.log(message);
 	    var buffer = Interrupts.encode(message).finish();
-	    console.log(buffer);
 
-	    decodedMessage = Interrupts.decode(buffer);
-	    console.log(decodedMessage);
-
-		child.stdin.write(buffer + "\n");
+		child.stdin.write(buffer);
+		child.stdin.end();
 	});
 }
 
@@ -48,19 +44,15 @@ function play() {
 
 	    var Interrupts = root.lookup("IPC.Interrupts");
 	    var message = Interrupts.create({ playStatus: {value: false} });
-	    console.log(message);
 	    var buffer = Interrupts.encode(message).finish();
-	    console.log(buffer);
 
-	    decodedMessage = Interrupts.decode(buffer);
-	    console.log(decodedMessage);
-
-		child.stdin.write(buffer + "\n");
+		child.stdin.write(buffer);
+		child.stdin.end();
 	});
 }
 
 function restart() {
-	if (state == 3) {
+	if (rendererState == 3) {
 		fade.style.zIndex = 10;
 		fade.style.opacity = 1;
 
@@ -77,15 +69,11 @@ function restart() {
 	    if (err) throw err;
 
 	    var Interrupts = root.lookup("IPC.Interrupts");
-	    var message = Interrupts.create({ restartStatus: {value: false} });
-	    console.log(message);
+	    var message = Interrupts.create({ restartStatus: {value: true} });
 	    var buffer = Interrupts.encode(message).finish();
-	    console.log(buffer);
 
-	    decodedMessage = Interrupts.decode(buffer);
-	    console.log(decodedMessage);
-
-		child.stdin.write(buffer + "\n");
+		child.stdin.write(buffer);
+		child.stdin.end();
 	});
 }
 
@@ -102,12 +90,12 @@ function los() {
 }
 
 function startStory() {
-	if (state == 1) {
+	if (rendererState == 1) {
 		fade.style.zIndex = 10;
 		fade.style.opacity = 1;
 
 		setTimeout(function() {
-			state = 2;
+			rendererState = 2;
 			visiblitityChange();
 			menu.visible = false;
 			loadStory();
@@ -116,16 +104,16 @@ function startStory() {
 }
 
 function startGame() {
-	if (state != 3) {
+	if (rendererState != 3) {
 		fade.style.zIndex = 10;
 		fade.style.opacity = 1;
 		losState = 1;
 		document.getElementById('losImg').src = `assets/los1.png`;
 
 		setTimeout(function() {
-			if (state == 2)
+			if (rendererState == 2)
 				stage.removeChild(story);
-			state = 3;
+			rendererState = 3;
 			visiblitityChange();
 			menu.visible = false;
 			loadGame();
@@ -136,20 +124,16 @@ function startGame() {
 	    if (err) throw err;
 
 	    var Interrupts = root.lookup("IPC.Interrupts");
-	    var message = Interrupts.create({ playStatus: {value: false} });
-	    console.log(message);
+	    var message = Interrupts.create({ levelNumber: 45 });
 	    var buffer = Interrupts.encode(message).finish();
-	    console.log(buffer);
 
-	    decodedMessage = Interrupts.decode(buffer);
-	    console.log(decodedMessage);
-
-		child.stdin.write(buffer + "\n");
+		child.stdin.write(buffer);
+		child.stdin.end();
 	});
 }
 
 function visiblitityChange() {
-	if (state == 1) {
+	if (rendererState == 1) {
 		document.getElementById('slide-in').style.visibility = 'visible';
 		var menuButtons = document.getElementsByClassName('menu-button');
 		for (var i = 0; i < menuButtons.length; i++)
@@ -159,7 +143,7 @@ function visiblitityChange() {
 		for (var i = 0; i < gameButtons.length; i++)
 			gameButtons[i].style.visibility = 'hidden';
 
-	} else if (state == 2) {
+	} else if (rendererState == 2) {
 
 		document.getElementById('slide-in').style.visibility = 'hidden';
 		var menuButtons = document.getElementsByClassName('menu-button');
@@ -170,7 +154,7 @@ function visiblitityChange() {
 		for (var i = 0; i < gameButtons.length; i++)
 			gameButtons[i].style.visibility = 'hidden';
 
-	} else if (state == 3) {
+	} else if (rendererState == 3) {
 
 		document.getElementById('slide-in').style.visibility = 'hidden';
 		var menuButtons = document.getElementsByClassName('menu-button');

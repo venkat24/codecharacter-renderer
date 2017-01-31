@@ -2,52 +2,49 @@ var protobuf = require('protobufjs');
 var path = require('path');
 var spawn = require('child_process').spawn;
 var child = spawn('./src/test/ipc');
-var decoded;
+var fs = require('fs');
+
+const ipcRenderer = require('electron').ipcRenderer;
+ipcRenderer.send('pid-message', child.pid);
+
+var stateVariable;
+var actors = [];
 var x = 396;
 // var visibilityArray = [ , , getVisiblityAll()];
 
-actors = [];
-
 child.stdout.on('data', (data) => {
-	console.log(data);
+	// console.log(data.toString());
 	protobuf.load('./src/test/state.proto', function(err, root) {
-		a = root.lookup("IPC.State");
-		// decode(data, a);
-		// decoded = a.decode(data);
-		// // for(var actor of decoded.actors)
-		// // 	for(var id in actor)
-		// // 		actor[id]=actor[id].toString();
-		// // console.log(decoded.actors);
-		// console.log(decoded.actors[0].posX.toString());
-		// setArrays();
+		var message = root.lookup("IPC.State");
+		decode(data, message);
 	});
 });
-// child.on('close', (code) => listen());
 
-function decode(data, a) {
-	decoded = a.decode(data);
-	if (decoded.actors[0].posX.low - x > 1)
-		console.log(decoded.actors[0].posX.toString() + " ...... Skiped..." + x );
-	x = decoded.actors[0].posX.low;
+function decode(data, message) {
+	stateVariable = message.decode(data);
+	if (stateVariable.actors[0].posX.low - x > 1)
+		console.log(stateVariable.actors[0].posX.toString() + " ...... Skiped..." + x );
+	x = stateVariable.actors[0].posX.low;
 	setArrays();
 }
 
 
 function setArrays() {
-	for (var i = 0; i < decoded.actors.length; i++) {
+	for (var i = 0; i < stateVariable.actors.length; i++) {
 		actors[i] = {};
-		for (var j in decoded.actors[i]) {
-			if (typeof(decoded.actors[i][j]) == "boolean")
-				actors[i][j] = decoded.actors[i][j];
-			else actors[i][j] = decoded.actors[i][j].low;
+		for (var j in stateVariable.actors[i]) {
+			if (typeof(stateVariable.actors[i][j]) == "boolean" || j == 'actorType') {
+				actors[i][j] = stateVariable.actors[i][j];
+			}
+			else actors[i][j] = stateVariable.actors[i][j].low;
 		}
 		actors[i].x = actors[i].posX;
 		actors[i].y = actors[i].posY;
 		actors[i].center = {};
 	}
 
-	if (actors.length > decoded.number.low)
-		actors.splice(decoded.number.low, actors.length - decoded.number.low);
+	if (actors.length > stateVariable.number.low)
+		actors.splice(stateVariable.number.low, actors.length - stateVariable.number.low);
 
 	terrainVisibility1 = [];
 	terrainVisibility2 = [];
@@ -55,8 +52,8 @@ function setArrays() {
 		terrainVisibility1[i] = [];
 		terrainVisibility2[i] = [];
 		for (var j = 0; j < 20; j++) {
-			terrainVisibility1[i][j] = decoded.player1Los.grid[i].losElement[j];
-			terrainVisibility2[i][j] = decoded.player2Los.grid[i].losElement[j];
+			terrainVisibility1[i][j] = stateVariable.player1Los.grid[i].losElement[j];
+			terrainVisibility2[i][j] = stateVariable.player2Los.grid[i].losElement[j];
 		}
 	}
 
@@ -170,8 +167,7 @@ var fireBalls = [
 	{
 		id: 1,
 		x: 470,
-		y: 500,
-		rotation: -Math.PI/5
+		y: 500
 	}
 ];
 
@@ -217,6 +213,7 @@ function loadGame() {
 function getTerrain() {
 	// below example for testing only
 	// replace with code that reads from simulator
+
 	return [
 		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
 		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'M', 'P', 'P', 'P', 'P', 'P', 'P'],
@@ -239,6 +236,13 @@ function getTerrain() {
 		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
 		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P']
 	];
+
+	// Load Terrain from File
+/*	protobuf.load('./src/test/terrain.proto', function(err, root) {
+		var data = fs.readFileSync('terrain' + level + '.txt');
+		var message = root.lookup("IPC.Terrain");
+		return message.decode(data);
+	});*/
 }
 
 function getVisiblity1() {
