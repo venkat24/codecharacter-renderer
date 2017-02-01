@@ -1,20 +1,25 @@
 var protobuf = require('protobufjs');
 var path = require('path');
 var spawn = require('child_process').spawn;
-var child = spawn('./src/test/ipc');
+var child = spawn('./src/ipc/ipc');
 var fs = require('fs');
 
 const ipcRenderer = require('electron').ipcRenderer;
 ipcRenderer.send('pid-message', child.pid);
 
-var stateVariable;
-var actors = [];
-var x = 396;
+var stateVariable,
+	tempState = [],
+	actors = [],
+	towers = [],
+	flags = [],
+	fireBalls = [],
+	bases = [],
+	x = 396;
 // var visibilityArray = [ , , getVisiblityAll()];
 
 child.stdout.on('data', (data) => {
 	// console.log(data.toString());
-	protobuf.load('./src/test/state.proto', function(err, root) {
+	protobuf.load('./src/ipc/proto/state.proto', function(err, root) {
 		var message = root.lookup("IPC.State");
 		decode(data, message);
 	});
@@ -23,28 +28,79 @@ child.stdout.on('data', (data) => {
 function decode(data, message) {
 	stateVariable = message.decode(data);
 	if (stateVariable.actors[0].posX.low - x > 1)
-		console.log(stateVariable.actors[0].posX.toString() + " ...... Skiped..." + x );
+		console.log(stateVariable.actors[0].posX.toString() + " ...... Skiped from..." + x );
 	x = stateVariable.actors[0].posX.low;
 	setArrays();
 }
 
 
 function setArrays() {
-	for (var i = 0; i < stateVariable.actors.length; i++) {
-		actors[i] = {};
-		for (var j in stateVariable.actors[i]) {
-			if (typeof(stateVariable.actors[i][j]) == "boolean" || j == 'actorType') {
-				actors[i][j] = stateVariable.actors[i][j];
+	tempState = stateVariable.actors.slice();
+	if (tempState.length > stateVariable.number.low)
+		tempState.splice(stateVariable.number.low, tempState.length - stateVariable.number.low);
+
+	var actorCount = 0,
+		towerCount = 0,
+		flagCount = 0,
+		baseCount = 0,
+		fireBallCount = 0;
+
+	for (var i = 0; i < tempState.length; i++) {
+		if (tempState[i].actorType == 1) {
+			fireBalls[fireBallCount] = {};
+			for (var j in tempState[i]) {
+				fireBalls[fireBallCount][j] = tempState[i][j].low;
 			}
-			else actors[i][j] = stateVariable.actors[i][j].low;
+			fireBalls[fireBallCount].x = fireBalls[fireBallCount].posX;
+			fireBalls[fireBallCount].y = fireBalls[fireBallCount].posY;
+			fireBalls[fireBallCount].center = {};
+			fireBallCount++;
 		}
-		actors[i].x = actors[i].posX;
-		actors[i].y = actors[i].posY;
-		actors[i].center = {};
+		else if (tempState[i].actorType == 2) {
+			bases[baseCount] = {};
+			for (var j in tempState[i]) {
+				bases[baseCount][j] = tempState[i][j].low;
+			}
+			bases[baseCount].x = bases[baseCount].posX;
+			bases[baseCount].y = bases[baseCount].posY;
+			bases[baseCount].center = {};
+			baseCount++;
+		}
+		else if (tempState[i].actorType == 3) {
+			flags[flagCount] = {};
+			for (var j in tempState[i]) {
+				flags[flagCount][j] = tempState[i][j].low;
+			}
+			flags[flagCount].x = flags[flagCount].posX;
+			flags[flagCount].y = flags[flagCount].posY;
+			flags[flagCount].center = {};
+			flagCount++;
+		}
+		else if (tempState[i].actorType == 7) {
+			towers[towerCount] = {};
+			for (var j in tempState[i]) {
+				towers[towerCount][j] = tempState[i][j].low;
+			}
+			towers[towerCount].x = towers[towerCount].posX;
+			towers[towerCount].y = towers[towerCount].posY;
+			towers[towerCount].center = {};
+			towerCount++;
+		}
+		else {
+			actors[actorCount] = {};
+			for (var j in tempState[i]) {
+				if (typeof(tempState[i][j]) == "boolean" || j == 'actorType') {
+					actors[actorCount][j] = tempState[i][j];
+				}
+				else actors[actorCount][j] = tempState[i][j].low;
+			}
+			actors[actorCount].x = actors[actorCount].posX;
+			actors[actorCount].y = actors[actorCount].posY;
+			actors[actorCount].center = {};
+			actorCount++;
+		}
 	}
 
-	if (actors.length > stateVariable.number.low)
-		actors.splice(stateVariable.number.low, actors.length - stateVariable.number.low);
 
 	terrainVisibility1 = [];
 	terrainVisibility2 = [];
@@ -95,7 +151,7 @@ var terrain = getTerrain(); // FOR TESTING ONLY.
 // 		y: 100,
 // 		actorType: 'sword',
 // 		attack: false,
-// 		playerID: 2,
+// 		playerId: 2,
 // 		HP: 40,
 // 		maxHP: 200
 // 	},
@@ -105,7 +161,7 @@ var terrain = getTerrain(); // FOR TESTING ONLY.
 // 		y: 650,
 // 		actorType: 'sword',
 // 		attack: true,
-// 		playerID: 1,
+// 		playerId: 1,
 // 		HP: 200,
 // 		maxHP: 200
 // 	},
@@ -114,75 +170,75 @@ var terrain = getTerrain(); // FOR TESTING ONLY.
 // 		x: 250,
 // 		y: 850,
 // 		actorType: 'king',
-// 		playerID: 1,
+// 		playerId: 1,
 // 		HP: 300,
 // 		maxHP: 800
 // 	}
 // ];
 
-var towers = [
-	{
-		id: 1,
-		x: 200,
-		y: 500,
-		playerID: 0,
-		HP: 5000,
-		maxHP: 5000
-	},
-	{
-		id: 2,
-		x: 1200,
-		y: 200,
-		playerID: 1,
-		HP: 2000,
-		maxHP: 5000
-	},
-	{
-		id: 3,
-		x: 390,
-		y: 500,
-		playerID: 2,
-		HP: 4000,
-		maxHP: 5000
-	},
+// var towers = [
+// 	{
+// 		id: 1,
+// 		x: 200,
+// 		y: 500,
+// 		playerId: 0,
+// 		HP: 5000,
+// 		maxHP: 5000
+// 	},
+// 	{
+// 		id: 2,
+// 		x: 1200,
+// 		y: 200,
+// 		playerId: 1,
+// 		HP: 2000,
+// 		maxHP: 5000
+// 	},
+// 	{
+// 		id: 3,
+// 		x: 390,
+// 		y: 500,
+// 		playerId: 2,
+// 		HP: 4000,
+// 		maxHP: 5000
+// 	},
 
-];
+// ];
 
-var flags = [
-	{
-		id: 1,
-		x: 1300,
-		y: 700,
-		playerID: 1
-	},
-	{
-		id: 2,
-		x: 600,
-		y: 10,
-		playerID: 2
-	},
-];
+// var flags = [
+// 	{
+// 		id: 1,
+// 		x: 1300,
+// 		y: 700,
+// 		playerId: 1
+// 	},
+// 	{
+// 		id: 2,
+// 		x: 600,
+// 		y: 10,
+// 		playerId: 2
+// 	},
+// ];
 
-var fireBalls = [
-	{
-		id: 1,
-		x: 470,
-		y: 500
-	}
-];
+// var fireBalls = [
+// 	{
+// 		id: 1,
+// 		x: 470,
+// 		y: 500
+// 	}
+// ];
 
-var bases = [
-	{
-		playerID: 1,
-		x: 306,
-		y: 717
-	},
-	{
-		playerID: 2,
-		x: 1945,
-		y: 716
-	}
-];
+// var bases = [
+// 	{
+// 		playerId: 1,
+// 		x: 306,
+// 		y: 717
+// 	},
+// 	{
+// 		playerId: 2,
+// 		x: 1945,
+// 		y: 716
+// 	}
+// ];
 
 // **FOR TESTING ONLY. All actors will be drawn with spritesheet animations in the final version**
 var spriteSheet;
@@ -349,16 +405,16 @@ function loadFog() {
 
 function loadActors() {
 	for (var i = 0; i < actors.length; i++) {
-		if (actors[i].actorType == 'sword') {
+		if (actors[i].actorType == 6) {
 			if (!actors[i].attack)
 				actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.sword.texture);
 			else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.attack.texture);
 		}
-		// else if (actors[i].actorType == 'magician')
+		// else if (actors[i].actorType === 0)
 		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.magician.texture);
-		// else if (actors[i].actorType == 'cavalry')
+		// else if (actors[i].actorType == 5)
 		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.cavalry.texture);
-		else if (actors[i].actorType == 'king')
+		else if (actors[i].actorType == 4)
 			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
 		else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.actor.texture); //FOR TESTING
 
@@ -370,16 +426,15 @@ function loadActors() {
 
 function loadTowers() {
 	for (var i = 0; i < towers.length; i++) {
-		if (towers[i].playerID == 0)
-			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower0.texture);
-		else if (towers[i].playerID == 1)
+		if (towers[i].playerId === 0)
 			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower1.texture);
-		else if (towers[i].playerID == 2)
+		else if (towers[i].playerId == 1)
 			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower2.texture);
+		else towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower0.texture);
 
 		towers[i].center = {};
-		towers[i].currentID = towers[i].playerID;
-		towers[i].lastSeenID = towers[i].playerID;
+		towers[i].currentID = towers[i].playerId;
+		towers[i].lastSeenID = towers[i].playerId;
 		towerSprites[i].setTransform(towers[i].x, towers[i].y);
 		stage.addChild(towerSprites[i]);
 	}
@@ -402,9 +457,9 @@ function loadHP() {
 
 function loadFlags() {
 	for (var i = 0; i < flags.length; i++) {
-		if (flags[i].playerID == 1)
+		if (flags[i].playerId === 0)
 			flagSprites[i] = new PIXI.Sprite(PIXI.loader.resources.flag1.texture);
-		if (flags[i].playerID == 2)
+		if (flags[i].playerId == 1)
 			flagSprites[i] = new PIXI.Sprite(PIXI.loader.resources.flag2.texture);
 
 		flagSprites[i].setTransform(flags[i].x, flags[i].y);
