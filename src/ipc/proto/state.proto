@@ -9,7 +9,7 @@
 syntax = "proto3";
 
 /**
- * Package specifier to prevent name clashes
+ * Package specifier to prevent name clashes 
  * between protocol message types
  */
 package IPC;
@@ -72,19 +72,20 @@ message State {
 		 * Message containing rows of LOS
 		 */
 		message LOSRows {
-			repeated LOS_TYPE element = 1;
+			repeated LOS_TYPE los_element = 1;
 		}
 
-		repeated LOSRows row = 1;
+		repeated LOSRows grid = 1;
 	}
 
 	/**
 	 * Expects a 2D array of LOSElements
 	 */
 	LOS player1_los = 2;
-
+	
 	/**
 	 * Expects a 2D array of LOSElements
 	 */
 	LOS player2_los = 3;
+	int64 number = 4;
 }
