@@ -59,13 +59,28 @@ div.menu-button {
 }
 
 #level1 {
-  bottom: 20%;
+  top: calc(16% - 29px);
   animation-delay: 2.5s;
 }
 
 #level2 {
-  bottom: 35%;
+  top: calc(33% - 29px);
   animation-delay: 2.7s;
+}
+
+#level3 {
+  top: calc(50% - 29px);
+  animation-delay: 2.9s;
+}
+
+#level4 {
+  top: calc(67% - 29px);
+  animation-delay: 3.1s;
+}
+
+#level5 {
+  top: calc(84% - 29px);
+  animation-delay: 3.3s;
 }
 
 .button-text {
