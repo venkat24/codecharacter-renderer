@@ -12,7 +12,7 @@ var up = false,
 
 var userConsole = document.getElementById('console'),
 	consoleMessages = document.getElementById('messages'),
-	message;
+	message = null;
 
 var camera = {
 	x: 0,

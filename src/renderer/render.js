@@ -117,26 +117,26 @@ function update() {
 		towerSprites[i].setTransform(towers[i].x + change.x, towers[i].y + change.y);
 
 		var towerVisibility = visibility(towers[i]);
+		var id;
 		if (towerVisibility == 2) {
-			var id = towers[i].playerID;
+			id = towers[i].playerId;
 			towers[i].lastSeenID = id;
 			towerSprites[i].visible = true;
 		}
 		else {
-			var id = towers[i].lastSeenID;
+			id = towers[i].lastSeenID;
 			if (towerVisibility == 1)
 				towerSprites[i].visible = true;
 			else towerSprites[i].visible = false;
 		}
 
 		if (towers[i].currentID != id) {
-			towers[i].currentID = towers[i].playerID;
-			if (towers[i].playerID == 0)
-				towerSprites[i].texture = PIXI.loader.resources.tower0.texture;
-			else if (towers[i].playerID == 1)
+			towers[i].currentID = towers[i].playerId;
+			if (towers[i].playerId === 0)
 				towerSprites[i].texture = PIXI.loader.resources.tower1.texture;
-			else if (towers[i].playerID == 2)
+			else if (towers[i].playerId == 1)
 				towerSprites[i].texture = PIXI.loader.resources.tower2.texture;
+			else towerSprites[i].texture = PIXI.loader.resources.tower0.texture;
 		}
 	}
 	for (var i = 0; i < towerHP.length; i++) {
@@ -167,5 +167,7 @@ function update() {
 function visibility(object) {
 	var x = Math.floor(object.center.x / gridW),
 		y = Math.floor(object.center.y / gridH);
-	return terrainVisibility[x][y];
+	if (terrainVisibility[x][y])
+		return terrainVisibility[x][y];
+	else return 0;
 }
