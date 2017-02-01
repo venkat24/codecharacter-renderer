@@ -1,6 +1,7 @@
 var rendererState = 1,
 	gameState = "play",
-	losState = 1;
+	losState = 1,
+	level = '01',
 	fade = document.getElementById("fade");
 
 function exit() {
@@ -16,16 +17,7 @@ function exit() {
 		}, 500);
 	}
 
-	protobuf.load("./src/test/interrupts.proto", function(err, root) {
-	    if (err) throw err;
-
-	    var Interrupts = root.lookup("IPC.Interrupts");
-	    var message = Interrupts.create({ exitStatus: {value: false} });
-	    var buffer = Interrupts.encode(message).finish();
-
-		child.stdin.write(buffer);
-		child.stdin.end();
-	});
+	child.stdin.write(`0${level}10\n`);
 }
 
 function play() {
@@ -33,22 +25,13 @@ function play() {
 		document.getElementById('playSvg').src = 'assets/play.svg';
 		document.getElementById('playDescription').innerHTML = 'Play';
 		gameState = "pause";
+		child.stdin.write(`0${level}00\n`);
 	} else {
 		document.getElementById('playSvg').src = 'assets/pause.svg';
 		document.getElementById('playDescription').innerHTML = 'Pause';
 		gameState = "play";
+		child.stdin.write(`1${level}00\n`);
 	}
-
-	protobuf.load("./src/test/interrupts.proto", function(err, root) {
-	    if (err) throw err;
-
-	    var Interrupts = root.lookup("IPC.Interrupts");
-	    var message = Interrupts.create({ playStatus: {value: false} });
-	    var buffer = Interrupts.encode(message).finish();
-
-		child.stdin.write(buffer);
-		child.stdin.end();
-	});
 }
 
 function restart() {
@@ -65,16 +48,7 @@ function restart() {
 		}, 500);
 	}
 
-	protobuf.load("./src/test/interrupts.proto", function(err, root) {
-	    if (err) throw err;
-
-	    var Interrupts = root.lookup("IPC.Interrupts");
-	    var message = Interrupts.create({ restartStatus: {value: true} });
-	    var buffer = Interrupts.encode(message).finish();
-
-		child.stdin.write(buffer);
-		child.stdin.end();
-	});
+	child.stdin.write(`1${level}01\n`);
 }
 
 function los() {
@@ -120,16 +94,7 @@ function startGame() {
 		}, 500);
 	}
 
-	protobuf.load("./src/test/interrupts.proto", function(err, root) {
-	    if (err) throw err;
-
-	    var Interrupts = root.lookup("IPC.Interrupts");
-	    var message = Interrupts.create({ levelNumber: 45 });
-	    var buffer = Interrupts.encode(message).finish();
-
-		child.stdin.write(buffer);
-		child.stdin.end();
-	});
+	child.stdin.write(`1${level}01\n`);
 }
 
 function visiblitityChange() {
