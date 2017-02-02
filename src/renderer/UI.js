@@ -57,7 +57,8 @@ document.body.addEventListener("keydown", function(e) {
 		}
 		if (e.keyCode == 76) {
 			userConsole.innerHTML = "<ul id='messages'></ul>";
-			consoleMessages = document.getElementById('messages');		}
+			consoleMessages = document.getElementById('messages');
+		}
 		if (e.keyCode == 70) {
 			if (userConsole.style.width != "100%")
 				userConsole.style.width = "100%";
@@ -65,6 +66,10 @@ document.body.addEventListener("keydown", function(e) {
 		}
 		if (e.keyCode == 187 || e.keyCode == 189) {
 			e.preventDefault();
+		}
+		// For Testing
+		if (e.keyCode == 82) {
+			child.kill();
 		}
 	}
 });

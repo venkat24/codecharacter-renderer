@@ -17,7 +17,7 @@ function exit() {
 		}, 500);
 	}
 
-	child.stdin.write(`0${level}10\n`);
+	child.stdin.write(`1${level}21\n`);
 }
 
 function play() {
@@ -25,12 +25,12 @@ function play() {
 		document.getElementById('playSvg').src = 'assets/play.svg';
 		document.getElementById('playDescription').innerHTML = 'Play';
 		gameState = "pause";
-		child.stdin.write(`0${level}00\n`);
+		child.stdin.write(`1${level}11\n`);
 	} else {
 		document.getElementById('playSvg').src = 'assets/pause.svg';
 		document.getElementById('playDescription').innerHTML = 'Pause';
 		gameState = "play";
-		child.stdin.write(`1${level}00\n`);
+		child.stdin.write(`2${level}11\n`);
 	}
 }
 
@@ -48,7 +48,7 @@ function restart() {
 		}, 500);
 	}
 
-	child.stdin.write(`1${level}01\n`);
+	child.stdin.write(`2${level}12\n`);
 }
 
 function los() {
@@ -94,7 +94,7 @@ function startGame() {
 		}, 500);
 	}
 
-	child.stdin.write(`1${level}01\n`);
+	child.stdin.write(`2${level}12\n`);
 }
 
 function visiblitityChange() {
