@@ -63,6 +63,9 @@ document.body.addEventListener("keydown", function(e) {
 				userConsole.style.width = "100%";
 			else userConsole.style.width = "25%";
 		}
+		if (e.keyCode == 187 || e.keyCode == 189) {
+			e.preventDefault();
+		}
 	}
 });
 document.body.addEventListener("keyup", function (e) {
@@ -105,6 +108,9 @@ document.body.addEventListener("mousemove", function(e) {
 	else down = false;
 });
 document.body.addEventListener("wheel", function(e) {
+	if(e.deltaY % 1 !== 0) {
+		e.preventDefault();
+	}
 	if (state == 3) {
 		scroll = true;
 		if (zoom.val < 2 && e.deltaY < 0)
@@ -201,6 +207,10 @@ function screenZoom() {
 
 	if (camera.zoom * zoom.init/width <= 1) {
 		camera.zoom = 1 * width/zoom.init;
+		zoom.val = camera.zoom;
+	}
+	if (camera.zoom * zoom.init/height <= 1) {
+		camera.zoom = 1 * height/zoom.init;
 		zoom.val = camera.zoom;
 	}
 }

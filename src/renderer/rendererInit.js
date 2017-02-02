@@ -9,6 +9,8 @@ var stage = new PIXI.Container(),
 	screen = new PIXI.Container(),
 	renderer = PIXI.autoDetectRenderer(width, height);
 
+var webFrame = require('electron').webFrame;
+webFrame.setVisualZoomLevelLimits(1, 1);
 document.body.appendChild(renderer.view);
 
 PIXI.loader
