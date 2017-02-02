@@ -1,43 +1,31 @@
 var protobuf = require('protobufjs');
-var path = require('path');
 var spawn = require('child_process').spawn;
-var child = spawn('./src/ipc/ipc');
+var child = spawn('./src/ipc/codechar/bin/main');
 var fs = require('fs');
 
 const ipcRenderer = require('electron').ipcRenderer;
 ipcRenderer.send('pid-message', child.pid);
 
 var stateVariable,
-	tempState = [],
 	actors = [],
 	towers = [],
 	flags = [],
 	fireBalls = [],
-	bases = [],
-	x = 396;
-// var visibilityArray = [ , , getVisiblityAll()];
+	bases = [];
+
+var visibilityArray = [getVisiblityAll()];
 
 child.stdout.on('data', (data) => {
-	// console.log(data.toString());
 	protobuf.load('./src/ipc/proto/state.proto', function(err, root) {
-		var message = root.lookup("IPC.State");
-		decode(data, message);
+		setArrays(data, root.lookup("IPC.State"));
 	});
 });
 
-function decode(data, message) {
-	stateVariable = message.decode(data);
-	if (stateVariable.actors[0].posX.low - x > 1)
-		console.log(stateVariable.actors[0].posX.toString() + " ...... Skiped from..." + x );
-	x = stateVariable.actors[0].posX.low;
-	setArrays();
-}
-
-
-function setArrays() {
-	tempState = stateVariable.actors.slice();
-	if (tempState.length > stateVariable.number.low)
-		tempState.splice(stateVariable.number.low, tempState.length - stateVariable.number.low);
+function setArrays(data, state) {
+	stateVariable = state.decode(data);
+	var tempState = stateVariable.actors;
+	if (tempState.length > stateVariable.noOfActors.low)
+		tempState.splice(stateVariable.noOfActors.low, tempState.length - stateVariable.noOfActors.low);
 
 	var actorCount = 0,
 		towerCount = 0,
@@ -49,53 +37,53 @@ function setArrays() {
 		if (tempState[i].actorType == 1) {
 			fireBalls[fireBallCount] = {};
 			for (var j in tempState[i]) {
-				fireBalls[fireBallCount][j] = tempState[i][j].low;
+				if (typeof(tempState[i][j]) != 'object' || ['attackTargetPosition', 'destination'].indexOf(j) != -1) {
+					fireBalls[fireBallCount][j] = tempState[i][j];
+				}
+				else fireBalls[fireBallCount][j] = tempState[i][j].low;
 			}
-			fireBalls[fireBallCount].x = fireBalls[fireBallCount].posX;
-			fireBalls[fireBallCount].y = fireBalls[fireBallCount].posY;
 			fireBalls[fireBallCount].center = {};
 			fireBallCount++;
 		}
 		else if (tempState[i].actorType == 2) {
 			bases[baseCount] = {};
 			for (var j in tempState[i]) {
-				bases[baseCount][j] = tempState[i][j].low;
+				if (typeof(tempState[i][j]) != 'object' || ['attackTargetPosition', 'destination'].indexOf(j) != -1) {
+					bases[baseCount][j] = tempState[i][j];
+				}
+				else bases[baseCount][j] = tempState[i][j].low;
 			}
-			bases[baseCount].x = bases[baseCount].posX;
-			bases[baseCount].y = bases[baseCount].posY;
-			bases[baseCount].center = {};
 			baseCount++;
 		}
 		else if (tempState[i].actorType == 3) {
 			flags[flagCount] = {};
 			for (var j in tempState[i]) {
-				flags[flagCount][j] = tempState[i][j].low;
+				if (typeof(tempState[i][j]) != 'object' || ['attackTargetPosition', 'destination'].indexOf(j) != -1) {
+					flags[flagCount][j] = tempState[i][j];
+				}
+				else flags[flagCount][j] = tempState[i][j].low;
 			}
-			flags[flagCount].x = flags[flagCount].posX;
-			flags[flagCount].y = flags[flagCount].posY;
-			flags[flagCount].center = {};
 			flagCount++;
 		}
 		else if (tempState[i].actorType == 7) {
 			towers[towerCount] = {};
 			for (var j in tempState[i]) {
-				towers[towerCount][j] = tempState[i][j].low;
+				if (typeof(tempState[i][j]) != 'object' || ['attackTargetPosition', 'destination'].indexOf(j) != -1) {
+					towers[towerCount][j] = tempState[i][j];
+				}
+				else towers[towerCount][j] = tempState[i][j].low;
 			}
-			towers[towerCount].x = towers[towerCount].posX;
-			towers[towerCount].y = towers[towerCount].posY;
 			towers[towerCount].center = {};
 			towerCount++;
 		}
 		else {
 			actors[actorCount] = {};
 			for (var j in tempState[i]) {
-				if (typeof(tempState[i][j]) == "boolean" || j == 'actorType') {
+				if (typeof(tempState[i][j]) != 'object' || ['attackTargetPosition', 'destination'].indexOf(j) != -1) {
 					actors[actorCount][j] = tempState[i][j];
 				}
 				else actors[actorCount][j] = tempState[i][j].low;
 			}
-			actors[actorCount].x = actors[actorCount].posX;
-			actors[actorCount].y = actors[actorCount].posY;
 			actors[actorCount].center = {};
 			actorCount++;
 		}
@@ -108,13 +96,13 @@ function setArrays() {
 		terrainVisibility1[i] = [];
 		terrainVisibility2[i] = [];
 		for (var j = 0; j < 20; j++) {
-			terrainVisibility1[i][j] = stateVariable.player1Los.grid[i].losElement[j];
-			terrainVisibility2[i][j] = stateVariable.player2Los.grid[i].losElement[j];
+			terrainVisibility1[i][j] = stateVariable.player1Los.row[i].element[j];
+			terrainVisibility2[i][j] = stateVariable.player2Los.row[i].element[j];
 		}
 	}
 
-	// visibilityArray[0] = terrainVisibility1;
-	// visibilityArray[1] = terrainVisibility2;
+	visibilityArray[1] = terrainVisibility1;
+	visibilityArray[2] = terrainVisibility2;
 }
 
 var map,
@@ -130,115 +118,7 @@ var map,
 	gridW = 204.8,
 	gridH = 204.8;
 
-var terrain = getTerrain(); // FOR TESTING ONLY.
-	visibilityArray = [getVisiblityAll(), getVisiblity1(), getVisiblity2()]; // FOR TESTING ONLY
-
-// ****For Testing Purposes. To Replace with Data Received from Simulator****
-// var actors = [
-// 	{
-// 		id: 0,
-// 		x: 100,
-// 		y: 15
-// 	},
-// 	{
-// 		id: 1,
-// 		x: 200,
-// 		y: 200
-// 	},
-// 	{
-// 		id: 2,
-// 		x: 1300,
-// 		y: 100,
-// 		actorType: 'sword',
-// 		attack: false,
-// 		playerId: 2,
-// 		HP: 40,
-// 		maxHP: 200
-// 	},
-// 	{
-// 		id: 3,
-// 		x: 750,
-// 		y: 650,
-// 		actorType: 'sword',
-// 		attack: true,
-// 		playerId: 1,
-// 		HP: 200,
-// 		maxHP: 200
-// 	},
-// 	{
-// 		id: 4,
-// 		x: 250,
-// 		y: 850,
-// 		actorType: 'king',
-// 		playerId: 1,
-// 		HP: 300,
-// 		maxHP: 800
-// 	}
-// ];
-
-// var towers = [
-// 	{
-// 		id: 1,
-// 		x: 200,
-// 		y: 500,
-// 		playerId: 0,
-// 		HP: 5000,
-// 		maxHP: 5000
-// 	},
-// 	{
-// 		id: 2,
-// 		x: 1200,
-// 		y: 200,
-// 		playerId: 1,
-// 		HP: 2000,
-// 		maxHP: 5000
-// 	},
-// 	{
-// 		id: 3,
-// 		x: 390,
-// 		y: 500,
-// 		playerId: 2,
-// 		HP: 4000,
-// 		maxHP: 5000
-// 	},
-
-// ];
-
-// var flags = [
-// 	{
-// 		id: 1,
-// 		x: 1300,
-// 		y: 700,
-// 		playerId: 1
-// 	},
-// 	{
-// 		id: 2,
-// 		x: 600,
-// 		y: 10,
-// 		playerId: 2
-// 	},
-// ];
-
-// var fireBalls = [
-// 	{
-// 		id: 1,
-// 		x: 470,
-// 		y: 500
-// 	}
-// ];
-
-// var bases = [
-// 	{
-// 		playerId: 1,
-// 		x: 306,
-// 		y: 717
-// 	},
-// 	{
-// 		playerId: 2,
-// 		x: 1945,
-// 		y: 716
-// 	}
-// ];
+var terrain = getTerrain();
 
 // **FOR TESTING ONLY. All actors will be drawn with spritesheet animations in the final version**
 var spriteSheet;
@@ -247,11 +127,6 @@ var animatedSprite = {
 	y: 200
 };
 // **..**
-
-// ****...****
-
-// For animation testing purposes
-var temp = 0;
 
 function loadGame() {
 	loadTerrain();
@@ -295,9 +170,19 @@ function getTerrain() {
 
 	// Load Terrain from File
 /*	protobuf.load('./src/test/terrain.proto', function(err, root) {
-		var data = fs.readFileSync('terrain' + level + '.txt');
+		// var data = fs.readFileSync(`./src/ipc/terrain files/terrain_level${level}.txt`);
+		var data = fs.readFileSync('./src/ipc/terrain files/terrain_level01.txt');
 		var message = root.lookup("IPC.Terrain");
-		return message.decode(data);
+		var terrainTemp = message.decode(data);
+
+		var terrainArray = [];
+		for (var i = 0; i < terrainTemp.size; i++) {
+			terrainArray[i] = [];
+			for (var j = 0; j < terrainTemp.size; j++) {
+				terrainArray[i][j] = terrainTemp.row[i].element[j].type;
+			}
+		}
+		return terrainArray;
 	});*/
 }
 
@@ -418,7 +303,6 @@ function loadActors() {
 			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
 		else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.actor.texture); //FOR TESTING
 
-		actors[i].center = {};
 		actorSprites[i].setTransform(actors[i].x, actors[i].y);
 		stage.addChild(actorSprites[i]);
 	}
@@ -432,7 +316,6 @@ function loadTowers() {
 			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower2.texture);
 		else towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower0.texture);
 
-		towers[i].center = {};
 		towers[i].currentID = towers[i].playerId;
 		towers[i].lastSeenID = towers[i].playerId;
 		towerSprites[i].setTransform(towers[i].x, towers[i].y);
@@ -471,7 +354,6 @@ function loadFireBalls() {
 	for (var i = 0; i < fireBalls.length; i++) {
 		fireBallSprites[i] = new PIXI.Sprite(PIXI.loader.resources.fireBall.texture);
 
-		fireBalls[i].center = {};
 		fireBallSprites[i].setTransform(fireBalls[i].x, fireBalls[i].y, 1, 1, fireBalls[i].rotation);
 		stage.addChild(fireBallSprites[i]);
 	}

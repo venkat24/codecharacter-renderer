@@ -24,11 +24,6 @@ function render() {
 		screenPosition();
 		screenZoom();
 		stage.setTransform(camera.zoom * camera.x, camera.zoom * camera.y, camera.zoom, camera.zoom);
-
-		if (temp < 50) {
-			test();
-			// console.log(actors);
-		}
 		
 		// Object Position Update
 		update();
@@ -48,6 +43,7 @@ function consoleUpdate() {
 function init() {
 	width = window.innerWidth;
 	height = window.innerHeight;
+	terrainVisibility = visibilityArray[losState];
 
 	if (rendererState == 3) {
 		map.x = grid[0][0].x;
@@ -70,14 +66,6 @@ function findCenter(object, sprite) {
 	object.center.y = object.y + sprite.height/2;
 }
 
-function test() {
-	temp ++;
-	// for (var i = 0; i < actors.length; i++) {
-	// 	if (!actors[i].actorType)
-	// 		actors[i].x += 5 * Math.sin(temp/25);
-	// }
-}
-
 function update() {
 	var change = {
 		x: -(1 - 1 / camera.zoom) * width / 2,
@@ -94,8 +82,9 @@ function update() {
 			}
 			else {
 				grid[i][j].visible = true;
-				if (terrainVisibility[i][j] == 1)
+				if (terrainVisibility[i][j] == 1) {
 					fog[i][j].visible = true;
+				}
 				else fog[i][j].visible = false;
 			}
 		}

@@ -9,7 +9,7 @@
 syntax = "proto3";
 
 /**
- * Package specifier to prevent name clashes 
+ * Package specifier to prevent name clashes
  * between protocol message types
  */
 package IPC;
@@ -23,25 +23,41 @@ package IPC;
 message State {
 
 	/**
+	* Message describing Vector2D Class
+	*/
+	message Vector2D {
+
+		double x = 1;
+		double y = 2;
+	}
+
+	/**
 	 * Message describes base class actor
 	 */
 	message Actor {
 
 		int64 id = 1;
 		int64 player_id = 2;
-		int64 pos_x = 3;
-		int64 pos_y = 4;
-		bool attack = 5;
+		double x = 3;
+		double y = 4;
+		bool is_attacking = 5;
 		int64 hp = 6;
 		int64 max_hp = 7;
+		Vector2D attack_target_position = 8;
+		bool is_moving = 9;
+		Vector2D destination = 10;
+		bool is_carrying_flag = 11;
+		bool is_being_carried = 12;
+		bool is_visible_to_enemy = 13;
+		float contention_meter_score = 14;
 
 		/**
 		 * Set type of actor
 		 * Default to archer with tag 0
 		 */
 		enum Actor_type {
-			ARCHER = 0;
-			ARROW = 1;
+			MAGICIAN = 0;
+			FIREBALL = 1;
 			BASE = 2;
 			FLAG = 3;
 			KING = 4;
@@ -49,7 +65,7 @@ message State {
 			SWORDSMAN = 6;
 			TOWER = 7;
 		}
-		Actor_type actor_type = 8;
+		Actor_type actor_type = 15;
 	}
 
 	/**
@@ -72,20 +88,29 @@ message State {
 		 * Message containing rows of LOS
 		 */
 		message LOSRows {
-			repeated LOS_TYPE los_element = 1;
+			repeated LOS_TYPE element = 1;
 		}
 
-		repeated LOSRows grid = 1;
+		repeated LOSRows row = 1;
 	}
 
 	/**
 	 * Expects a 2D array of LOSElements
 	 */
 	LOS player1_los = 2;
-	
+
 	/**
 	 * Expects a 2D array of LOSElements
 	 */
 	LOS player2_los = 3;
-	int64 number = 4;
+
+	/**
+	 * Numbers of actors
+	 */
+	int64 no_of_actors = 4;
+
+	/**
+	 * Tower contention bar limit
+	 */
+	float contention_meter_limit = 5;
 }
