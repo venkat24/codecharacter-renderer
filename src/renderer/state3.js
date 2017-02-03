@@ -1,25 +1,19 @@
 var protobuf = require('protobufjs');
 var spawn = require('child_process').spawn;
-var child = spawn('./src/ipc/codechar/bin/main');
+var ipcRenderer = require('electron').ipcRenderer;
 var fs = require('fs');
-
-const ipcRenderer = require('electron').ipcRenderer;
-ipcRenderer.send('pid-message', child.pid);
+var child;
 
 var stateVariable,
+	started = false,
 	actors = [],
 	towers = [],
 	flags = [],
 	fireBalls = [],
 	bases = [];
 
-var visibilityArray = [getVisiblityAll()];
-
-child.stdout.on('data', (data) => {
-	protobuf.load('./src/ipc/proto/state.proto', function(err, root) {
-		setArrays(data, root.lookup("IPC.State"));
-	});
-});
+var terrain = getTerrain(),
+	visibilityArray = [getVisiblityAll()];
 
 function setArrays(data, state) {
 	stateVariable = state.decode(data);
@@ -92,10 +86,10 @@ function setArrays(data, state) {
 
 	terrainVisibility1 = [];
 	terrainVisibility2 = [];
-	for (var i = 0; i < 20; i++) {
+	for (var i = 0; i < stateVariable.player1Los.row.length; i++) {
 		terrainVisibility1[i] = [];
 		terrainVisibility2[i] = [];
-		for (var j = 0; j < 20; j++) {
+		for (var j = 0; j < stateVariable.player1Los.row[i].element.length; j++) {
 			terrainVisibility1[i][j] = stateVariable.player1Los.row[i].element[j];
 			terrainVisibility2[i][j] = stateVariable.player2Los.row[i].element[j];
 		}
@@ -103,6 +97,11 @@ function setArrays(data, state) {
 
 	visibilityArray[1] = terrainVisibility1;
 	visibilityArray[2] = terrainVisibility2;
+
+	if (!started) {
+		startGame();
+		started = true;
+	}
 }
 
 var map,
@@ -118,7 +117,6 @@ var map,
 	gridW = 204.8,
 	gridH = 204.8;
 
-var terrain = getTerrain();
 
 // **FOR TESTING ONLY. All actors will be drawn with spritesheet animations in the final version**
 var spriteSheet;
@@ -138,7 +136,6 @@ function loadGame() {
 	loadHP();
 	loadBases();
 	animation(); // FOR TESTING ONLY
-	setTimeout(fadeIn, 500);
 }
 
 function getTerrain() {
@@ -146,30 +143,41 @@ function getTerrain() {
 	// replace with code that reads from simulator
 
 	return [
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'M', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'M', 'P', 'M', 'P', 'P', 'P', 'P', 'P', 'P', 'M', 'M', 'M', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'M', 'M', 'M', 'M', 'M', 'M', 'P', 'P', 'P', 'M', 'M', 'M', 'M', 'M', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'M', 'M', 'M', 'M', 'M', 'M', 'P', 'P', 'P', 'P', 'M', 'M', 'M', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'M', 'M', 'M', 'M', 'M', 'M', 'P', 'P', 'P', 'P', 'P', 'M', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'M', 'M', 'M', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'M', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'F', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'F', 'F', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-		['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-		['P', 'P', 'F', 'F', 'F', 'F', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-		['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P']
+		[ 0, 1, 0, 0, 0, 2, 2, 0, 1, 2, 1, 1, 1, 0, 2, 1, 1, 1, 2, 0, 0, 0, 0, 2, 1, 0, 2, 1, 2, 0 ],
+		[ 0, 0, 0, 2, 0, 2, 2, 0, 0, 1, 0, 1, 1, 2, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 2, 0 ],
+		[ 0, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 0, 2, 2, 2 ],
+		[ 0, 2, 1, 0, 0, 2, 1, 0, 0, 1, 1, 0, 0, 1, 1, 2, 1, 2, 1, 1, 0, 0, 0, 1, 0, 0, 2, 2, 2, 2 ],
+		[ 2, 1, 1, 1, 0, 1, 1, 1, 2, 2, 0, 1, 2, 2, 0, 1, 0, 0, 0, 2, 2, 0, 2, 1, 0, 0, 0, 0, 2, 2 ],
+		[ 2, 0, 1, 1, 0, 0, 1, 0, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 0, 1, 2, 0, 1, 0, 2, 1, 2, 1 ],
+		[ 2, 2, 2, 1, 1, 2, 1, 0, 1, 2, 2, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 1, 1, 1, 2, 2, 1, 2, 1 ],
+		[ 0, 2, 1, 2, 1, 1, 0, 2, 2, 2, 1, 2, 1, 2, 1, 2, 0, 1, 2, 1, 1, 2, 0, 1, 2, 2, 0, 0, 0, 2 ],
+		[ 0, 2, 2, 1, 2, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 0, 2, 1, 1, 0, 1, 0, 2 ],
+		[ 2, 1, 1, 2, 1, 2, 1, 0, 0, 2, 1, 0, 0, 1, 2, 2, 1, 2, 1, 0, 0, 1, 0, 2, 2, 0, 1, 2, 0, 1 ],
+		[ 0, 0, 0, 1, 0, 0, 2, 1, 1, 1, 2, 1, 2, 0, 1, 0, 0, 1, 0, 0, 2, 0, 2, 1, 1, 2, 0, 0, 2, 2 ],
+		[ 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 0, 0, 2, 2, 1, 1, 1, 0, 2, 1, 1, 0, 2 ],
+		[ 1, 0, 1, 2, 1, 1, 0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 2, 0, 1, 1, 2, 0, 1, 0, 0, 1, 0, 2, 0, 2 ],
+		[ 2, 2, 2, 0, 2, 0, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 0, 2, 2, 0, 1, 1, 2, 0, 1, 1, 0, 0, 1, 1 ],
+		[ 1, 2, 0, 1, 0, 2, 0, 1, 2, 2, 1, 0, 1, 1, 2, 0, 1, 1, 2, 2, 2, 0, 2, 0, 2, 2, 0, 2, 2, 2 ],
+		[ 1, 2, 2, 0, 2, 2, 0, 1, 2, 0, 0, 2, 1, 1, 2, 2, 1, 2, 2, 0, 2, 1, 1, 1, 1, 0, 2, 0, 1, 0 ],
+		[ 1, 1, 2, 1, 2, 0, 2, 0, 2, 2, 0, 2, 0, 0, 0, 1, 2, 1, 1, 1, 2, 2, 0, 2, 0, 2, 0, 2, 0, 2 ],
+		[ 1, 1, 1, 0, 2, 1, 1, 0, 1, 0, 1, 1, 1, 1, 2, 2, 2, 1, 2, 0, 0, 2, 1, 0, 1, 2, 0, 1, 2, 2 ],
+		[ 0, 1, 2, 2, 0, 2, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1, 1, 0, 0, 1, 2, 1, 2, 2, 1, 0, 2 ],
+		[ 1, 0, 2, 2, 2, 0, 1, 1, 0, 0, 1, 0, 2, 1, 1, 1, 1, 0, 1, 2, 0, 2, 2, 1, 0, 2, 0, 1, 2, 2 ],
+		[ 1, 1, 0, 2, 0, 0, 1, 0, 0, 2, 1, 1, 2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 2, 1, 0, 0, 0, 2, 1 ],
+		[ 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 2, 2, 1, 2, 0, 1, 0, 2, 0, 0, 2, 1, 1, 1, 1, 1, 2, 0, 2, 0 ],
+		[ 2, 1, 2, 2, 2, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 1, 1, 2, 2, 2, 2, 0, 1, 0, 0, 2, 1, 1 ],
+		[ 1, 1, 1, 1, 0, 0, 1, 1, 2, 0, 1, 1, 1, 2, 2, 1, 2, 0, 2, 0, 0, 1, 0, 2, 0, 2, 0, 0, 2, 1 ],
+		[ 0, 1, 1, 2, 0, 2, 0, 2, 0, 0, 1, 0, 2, 1, 0, 1, 1, 0, 2, 1, 1, 2, 2, 2, 2, 0, 1, 0, 2, 0 ],
+		[ 1, 2, 0, 1, 2, 0, 0, 2, 0, 0, 0, 2, 2, 2, 2, 1, 0, 2, 1, 0, 0, 1, 1, 2, 1, 2, 2, 1, 1, 0 ],
+		[ 2, 1, 1, 1, 2, 1, 0, 1, 0, 1, 2, 0, 0, 0, 0, 0, 1, 2, 2, 2, 0, 0, 1, 1, 0, 2, 2, 1, 2, 1 ],
+		[ 0, 1, 0, 1, 0, 1, 0, 2, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 2, 0, 1, 1, 2, 2, 2, 0, 0 ],
+		[ 1, 0, 2, 0, 0, 2, 0, 0, 2, 0, 1, 2, 1, 1, 2, 1, 2, 2, 0, 1, 0, 2, 1, 0, 1, 0, 1, 1, 2, 2 ],
+		[ 2, 0, 0, 1, 1, 2, 0, 2, 2, 1, 1, 1, 2, 1, 0, 1, 2, 1, 2, 1, 2, 0, 1, 2, 1, 1, 2, 2, 0, 0 ] 
 	];
 
+
 	// Load Terrain from File
-/*	protobuf.load('./src/test/terrain.proto', function(err, root) {
+/*  protobuf.load('./src/test/terrain.proto', function(err, root) {
 		// var data = fs.readFileSync(`./src/ipc/terrain files/terrain_level${level}.txt`);
 		var data = fs.readFileSync('./src/ipc/terrain files/terrain_level01.txt');
 		var message = root.lookup("IPC.Terrain");
@@ -186,65 +194,11 @@ function getTerrain() {
 	});*/
 }
 
-function getVisiblity1() {
-	// below example for testing only
-	// replace with code that reads from simulator
-	return [
-		[ 0, 1, 1, 2, 2, 1, 2, 1, 2, 2, 2, 0, 0, 2, 0, 1, 0, 0, 2, 1 ],
-		[ 1, 2, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 2, 1, 2, 0, 0, 1, 0, 1 ],
-		[ 1, 1, 1, 0, 0, 2, 1, 2, 1, 0, 0, 2, 1, 2, 2, 1, 2, 1, 0, 0 ],
-		[ 0, 1, 2, 0, 2, 0, 1, 1, 1, 2, 1, 0, 0, 0, 2, 2, 2, 1, 1, 0 ],
-		[ 0, 1, 2, 1, 1, 0, 2, 2, 0, 0, 2, 2, 0, 2, 2, 1, 1, 1, 1, 2 ],
-		[ 0, 0, 0, 0, 2, 2, 1, 2, 0, 1, 2, 0, 0, 1, 2, 2, 2, 0, 0, 2 ],
-		[ 1, 0, 2, 1, 2, 2, 0, 0, 2, 1, 1, 1, 2, 1, 0, 0, 0, 2, 0, 0 ],
-		[ 1, 2, 1, 0, 0, 1, 2, 0, 2, 0, 1, 2, 1, 1, 2, 0, 1, 0, 0, 0 ],
-		[ 2, 1, 2, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 2, 2, 2, 2, 0, 0, 1 ],
-		[ 2, 1, 0, 2, 2, 2, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 2, 1, 1, 1 ],
-		[ 2, 1, 0, 2, 2, 0, 0, 2, 0, 1, 2, 0, 0, 0, 2, 0, 1, 2, 0, 2 ],
-		[ 1, 0, 0, 1, 2, 0, 0, 0, 1, 0, 1, 2, 0, 1, 1, 0, 2, 2, 2, 1 ],
-		[ 1, 1, 0, 2, 0, 0, 0, 2, 1, 1, 1, 1, 2, 1, 0, 2, 2, 1, 1, 2 ],
-		[ 2, 1, 2, 1, 0, 0, 1, 1, 0, 2, 1, 2, 0, 0, 0, 1, 0, 0, 2, 0 ],
-		[ 1, 1, 0, 2, 1, 1, 1, 2, 0, 1, 2, 1, 2, 2, 1, 1, 1, 0, 0, 2 ],
-		[ 0, 1, 0, 2, 0, 2, 0, 2, 0, 0, 2, 1, 0, 2, 2, 1, 1, 0, 0, 1 ],
-		[ 2, 1, 2, 0, 0, 0, 2, 1, 1, 1, 2, 0, 2, 1, 1, 1, 1, 1, 1, 1 ],
-		[ 1, 1, 0, 2, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 2, 0, 0, 1, 1 ],
-		[ 2, 2, 2, 1, 1, 0, 1, 1, 2, 0, 2, 1, 0, 1, 1, 0, 1, 0, 2, 2 ],
-		[ 0, 0, 1, 2, 2, 2, 0, 0, 2, 2, 1, 1, 2, 1, 2, 0, 2, 2, 0, 1 ]
-	];
-}
-
-function getVisiblity2() {
-	// below example for testing only
-	// replace with code that reads from simulator
-	return [
-		[ 1, 0, 2, 1, 2, 0, 2, 0, 2, 0, 1, 1, 0, 1, 1, 1, 1, 0, 2, 0 ],
-		[ 2, 1, 2, 2, 0, 1, 2, 0, 1, 0, 1, 2, 2, 1, 1, 2, 2, 2, 0, 2 ],
-		[ 2, 2, 0, 1, 2, 1, 1, 1, 1, 2, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0 ],
-		[ 1, 1, 1, 0, 1, 1, 0, 2, 0, 0, 0, 2, 2, 2, 0, 2, 1, 0, 1, 1 ],
-		[ 0, 2, 2, 2, 1, 0, 1, 0, 1, 2, 1, 0, 0, 0, 2, 2, 2, 1, 1, 0 ],
-		[ 2, 2, 2, 1, 1, 1, 1, 1, 2, 0, 2, 0, 0, 1, 2, 2, 2, 2, 2, 1 ],
-		[ 0, 2, 2, 1, 2, 2, 1, 2, 0, 2, 1, 2, 1, 0, 0, 2, 0, 1, 1, 1 ],
-		[ 2, 2, 2, 1, 0, 1, 2, 0, 0, 0, 1, 0, 2, 2, 0, 2, 2, 0, 1, 2 ],
-		[ 1, 2, 0, 2, 1, 2, 0, 0, 2, 0, 1, 2, 1, 1, 0, 2, 1, 0, 0, 1 ],
-		[ 2, 2, 2, 2, 1, 1, 0, 0, 0, 1, 1, 2, 1, 2, 0, 2, 2, 2, 0, 2 ],
-		[ 2, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 1, 0, 0, 2, 0, 2, 1, 2, 1 ],
-		[ 1, 0, 1, 2, 2, 2, 0, 1, 0, 2, 2, 1, 1, 0, 2, 1, 1, 1, 2, 2 ],
-		[ 1, 0, 1, 0, 2, 2, 1, 1, 0, 1, 0, 1, 2, 1, 0, 0, 2, 0, 0, 1 ],
-		[ 2, 2, 2, 2, 0, 1, 2, 0, 0, 2, 2, 2, 1, 0, 2, 2, 0, 2, 1, 1 ],
-		[ 2, 1, 1, 1, 0, 0, 1, 2, 0, 2, 1, 2, 0, 2, 1, 0, 1, 2, 1, 2 ],
-		[ 2, 2, 0, 0, 1, 0, 0, 1, 1, 2, 1, 1, 0, 0, 1, 0, 2, 1, 2, 2 ],
-		[ 2, 1, 2, 1, 2, 1, 2, 0, 1, 1, 1, 0, 2, 0, 2, 2, 2, 0, 2, 1 ],
-		[ 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 2, 2, 0, 2, 1, 1, 2, 0 ],
-		[ 1, 1, 1, 2, 1, 1, 1, 2, 2, 0, 2, 0, 1, 1, 2, 2, 2, 2, 0, 1 ],
-		[ 0, 2, 2, 0, 1, 1, 2, 2, 1, 2, 1, 0, 1, 1, 2, 1, 1, 0, 2, 1 ]
-	];
-}
-
 function getVisiblityAll() {
 	var arr = [];
-	for (var i = 0; i < 20; i++) {
+	for (var i = 0; i < terrain.length; i++) {
 		arr[i] = [];
-		for (var j = 0; j < 20; j++) {
+		for (var j = 0; j < terrain.length; j++) {
 			arr[i][j] = 2;
 		}
 	}
@@ -258,12 +212,12 @@ function loadTerrain() {
 	for (var i = 0; i < terrain.length; i++) {
 		grid[i] = [];
 		for (var j = 0; j < terrain[i].length; j++) {
-			if (terrain[i][j] === 'P')
+			if (terrain[i][j] === 0)
 				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.plain.texture);
-			else if (terrain[i][j] === 'M')
-				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.mountain.texture);
-			else if (terrain[i][j] === 'F')
+			else if (terrain[i][j] === 1)
 				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.forest.texture);
+			else if (terrain[i][j] === 2)
+				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.mountain.texture);
 
 			grid[i][j].setTransform(gridW * i, gridH * j, 0.8, 0.8);
 			stage.addChild(grid[i][j]);
@@ -296,9 +250,9 @@ function loadActors() {
 			else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.attack.texture);
 		}
 		// else if (actors[i].actorType === 0)
-		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.magician.texture);
+		//  actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.magician.texture);
 		// else if (actors[i].actorType == 5)
-		// 	actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.cavalry.texture);
+		//  actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.cavalry.texture);
 		else if (actors[i].actorType == 4)
 			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
 		else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.actor.texture); //FOR TESTING
@@ -402,5 +356,6 @@ function endGame() {
 		n = stage.getChildAt(1);
 		stage.removeChild(n);
 	}
+	started = false;
 	setTimeout(fadeIn, 500);
 }
