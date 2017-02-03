@@ -133,7 +133,7 @@ document.body.addEventListener("mousedown", function(e) {
 			}
 			else startGame();
 		} else if (e.button == 2) {
-			startGame();
+			loadChild();
 		}
 	}
 });

@@ -156,7 +156,10 @@ function update() {
 function visibility(object) {
 	var x = Math.floor(object.center.x / gridW),
 		y = Math.floor(object.center.y / gridH);
-	if (terrainVisibility[x][y])
-		return terrainVisibility[x][y];
+	if (terrainVisibility[x]) {
+		if (terrainVisibility[x][y])
+			return terrainVisibility[x][y];
+		else return 0;
+	}
 	else return 0;
 }

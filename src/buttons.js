@@ -12,25 +12,29 @@ function exit() {
 		setTimeout(function() {
 			rendererState = 1;
 			endGame();
+			process.kill(child.pid);
+			ipcRenderer.send('pid-message', null);
+
 			visiblitityChange();
 			menu.visible = true;
 		}, 500);
 	}
 
-	child.stdin.write(`1${level}21\n`);
 }
 
 function play() {
-	if (gameState == "play") {
-		document.getElementById('playSvg').src = 'assets/play.svg';
-		document.getElementById('playDescription').innerHTML = 'Play';
-		gameState = "pause";
-		child.stdin.write(`1${level}11\n`);
-	} else {
-		document.getElementById('playSvg').src = 'assets/pause.svg';
-		document.getElementById('playDescription').innerHTML = 'Pause';
-		gameState = "play";
-		child.stdin.write(`2${level}11\n`);
+	if (rendererState == 3) {
+		if (gameState == "play") {
+			document.getElementById('playSvg').src = 'assets/play.svg';
+			document.getElementById('playDescription').innerHTML = 'Play';
+			gameState = "pause";
+			child.stdin.write(`1${level}11\n`);
+		} else {
+			document.getElementById('playSvg').src = 'assets/pause.svg';
+			document.getElementById('playDescription').innerHTML = 'Pause';
+			gameState = "play";
+			child.stdin.write(`2${level}11\n`);
+		}
 	}
 }
 
@@ -43,23 +47,22 @@ function restart() {
 			losState = 1;
 			document.getElementById('losImg').src = `assets/los1.png`;
 
+			child.stdin.write(`2${level}12\n`);
 			endGame();
 			loadGame();
 		}, 500);
 	}
 
-	child.stdin.write(`2${level}12\n`);
 }
 
 function los() {
-	losState >= 2 ? losState = 0 : losState++;
 	fade.style.zIndex = 10;
 	fade.style.opacity = 1;
 	setTimeout(function() {
+		losState >= 2 ? losState = 0 : losState++;
 		fade.style.zIndex = -10;
 		fade.style.opacity = 0;
 		document.getElementById('losImg').src = `assets/los${losState}.png`;
-		terrainVisibility = visibilityArray[losState];
 	}, 500);
 }
 
@@ -77,10 +80,24 @@ function startStory() {
 	}
 }
 
-function startGame() {
+function loadChild() {
 	if (rendererState != 3) {
+		child = spawn('./src/ipc/codechar/bin/main');
+		ipcRenderer.send('pid-message', child.pid);
 		fade.style.zIndex = 10;
 		fade.style.opacity = 1;
+
+		child.stdout.on('data', (data) => {
+			protobuf.load('./src/ipc/proto/state.proto', function(err, root) {
+				setArrays(data, root.lookup("IPC.State"));
+			});
+		});
+	}
+}
+
+function startGame() {
+	if (rendererState != 3) {
+		child.stdin.write(`2${level}12\n`);
 		losState = 1;
 		document.getElementById('losImg').src = `assets/los1.png`;
 
@@ -91,14 +108,15 @@ function startGame() {
 			visiblitityChange();
 			menu.visible = false;
 			loadGame();
+			setTimeout(fadeIn, 500);
 		}, 500);
 	}
 
-	child.stdin.write(`2${level}12\n`);
 }
 
 function visiblitityChange() {
 	if (rendererState == 1) {
+
 		document.getElementById('slide-in').style.visibility = 'visible';
 		var menuButtons = document.getElementsByClassName('menu-button');
 		for (var i = 0; i < menuButtons.length; i++)
