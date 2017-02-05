@@ -131,7 +131,7 @@ document.body.addEventListener("mousedown", function(e) {
 				storyCount++;
 				nextImg();
 			}
-			else startGame();
+			else loadChild();
 		} else if (e.button == 2) {
 			loadChild();
 		}

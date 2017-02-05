@@ -356,6 +356,5 @@ function endGame() {
 		n = stage.getChildAt(1);
 		stage.removeChild(n);
 	}
-	started = false;
 	setTimeout(fadeIn, 500);
 }
