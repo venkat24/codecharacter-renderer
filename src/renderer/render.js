@@ -74,8 +74,8 @@ function update() {
 
 	for (var i = 0; i < grid.length; i++) {
 		for (var j = 0; j < grid[i].length; j++) {
-			grid[i][j].setTransform(change.x + gridW * i, change.y + gridH * j, 0.8, 0.8);
-			fog[i][j].setTransform(change.x + gridW * i, change.y + gridH * j, 0.8, 0.8);
+			grid[i][j].setTransform(change.x + gridSize * i, change.y + gridSize * j, gridSize/256, gridSize/256);
+			fog[i][j].setTransform(change.x + gridSize * i, change.y + gridSize * j, gridSize/256, gridSize/256);
 			if (!terrainVisibility[i][j]) {
 				grid[i][j].visible = false;
 				fog[i][j].visible = false;
@@ -154,8 +154,8 @@ function update() {
 }
 
 function visibility(object) {
-	var x = Math.floor(object.center.x / gridW),
-		y = Math.floor(object.center.y / gridH);
+	var x = Math.floor(object.center.x / gridSize),
+		y = Math.floor(object.center.y / gridSize);
 	if (terrainVisibility[x]) {
 		if (terrainVisibility[x][y])
 			return terrainVisibility[x][y];
