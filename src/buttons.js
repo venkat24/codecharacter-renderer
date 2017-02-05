@@ -8,12 +8,13 @@ function exit() {
 	if (rendererState == 3) {
 		fade.style.zIndex = 10;
 		fade.style.opacity = 1;
+		child.kill();
+		ipcRenderer.send('pid-message', null);
 
 		setTimeout(function() {
 			rendererState = 1;
 			endGame();
-			process.kill(child.pid);
-			ipcRenderer.send('pid-message', null);
+			started = false;
 
 			visiblitityChange();
 			menu.visible = true;
