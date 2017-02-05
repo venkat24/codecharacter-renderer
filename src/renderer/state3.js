@@ -5,15 +5,14 @@ var fs = require('fs');
 var child;
 
 var stateVariable,
+	terrain,
 	started = false,
 	actors = [],
 	towers = [],
 	flags = [],
 	fireBalls = [],
 	bases = [];
-
-var terrain = getTerrain(),
-	visibilityArray = [getVisiblityAll()];
+	visibilityArray = [];
 
 function setArrays(data, state) {
 	stateVariable = state.decode(data);
@@ -99,12 +98,14 @@ function setArrays(data, state) {
 	visibilityArray[2] = terrainVisibility2;
 
 	if (!started) {
+		terrain = getTerrain();
 		startGame();
 		started = true;
 	}
 }
 
 var map,
+	gridSize,
 	actorSprites = [],
 	towerSprites = [],
 	flagSprites = [],
@@ -113,9 +114,7 @@ var map,
 	actorHP = [],
 	towerHP = [],
 	grid = [],
-	fog = [],
-	gridW = 204.8,
-	gridH = 204.8;
+	fog = [];
 
 
 // **FOR TESTING ONLY. All actors will be drawn with spritesheet animations in the final version**
@@ -139,59 +138,23 @@ function loadGame() {
 }
 
 function getTerrain() {
-	// below example for testing only
-	// replace with code that reads from simulator
-
-	return [
-		[ 0, 1, 0, 0, 0, 2, 2, 0, 1, 2, 1, 1, 1, 0, 2, 1, 1, 1, 2, 0, 0, 0, 0, 2, 1, 0, 2, 1, 2, 0 ],
-		[ 0, 0, 0, 2, 0, 2, 2, 0, 0, 1, 0, 1, 1, 2, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 2, 0 ],
-		[ 0, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 0, 2, 2, 2 ],
-		[ 0, 2, 1, 0, 0, 2, 1, 0, 0, 1, 1, 0, 0, 1, 1, 2, 1, 2, 1, 1, 0, 0, 0, 1, 0, 0, 2, 2, 2, 2 ],
-		[ 2, 1, 1, 1, 0, 1, 1, 1, 2, 2, 0, 1, 2, 2, 0, 1, 0, 0, 0, 2, 2, 0, 2, 1, 0, 0, 0, 0, 2, 2 ],
-		[ 2, 0, 1, 1, 0, 0, 1, 0, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 0, 1, 2, 0, 1, 0, 2, 1, 2, 1 ],
-		[ 2, 2, 2, 1, 1, 2, 1, 0, 1, 2, 2, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 1, 1, 1, 2, 2, 1, 2, 1 ],
-		[ 0, 2, 1, 2, 1, 1, 0, 2, 2, 2, 1, 2, 1, 2, 1, 2, 0, 1, 2, 1, 1, 2, 0, 1, 2, 2, 0, 0, 0, 2 ],
-		[ 0, 2, 2, 1, 2, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 0, 2, 1, 1, 0, 1, 0, 2 ],
-		[ 2, 1, 1, 2, 1, 2, 1, 0, 0, 2, 1, 0, 0, 1, 2, 2, 1, 2, 1, 0, 0, 1, 0, 2, 2, 0, 1, 2, 0, 1 ],
-		[ 0, 0, 0, 1, 0, 0, 2, 1, 1, 1, 2, 1, 2, 0, 1, 0, 0, 1, 0, 0, 2, 0, 2, 1, 1, 2, 0, 0, 2, 2 ],
-		[ 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 0, 0, 2, 2, 1, 1, 1, 0, 2, 1, 1, 0, 2 ],
-		[ 1, 0, 1, 2, 1, 1, 0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 2, 0, 1, 1, 2, 0, 1, 0, 0, 1, 0, 2, 0, 2 ],
-		[ 2, 2, 2, 0, 2, 0, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 0, 2, 2, 0, 1, 1, 2, 0, 1, 1, 0, 0, 1, 1 ],
-		[ 1, 2, 0, 1, 0, 2, 0, 1, 2, 2, 1, 0, 1, 1, 2, 0, 1, 1, 2, 2, 2, 0, 2, 0, 2, 2, 0, 2, 2, 2 ],
-		[ 1, 2, 2, 0, 2, 2, 0, 1, 2, 0, 0, 2, 1, 1, 2, 2, 1, 2, 2, 0, 2, 1, 1, 1, 1, 0, 2, 0, 1, 0 ],
-		[ 1, 1, 2, 1, 2, 0, 2, 0, 2, 2, 0, 2, 0, 0, 0, 1, 2, 1, 1, 1, 2, 2, 0, 2, 0, 2, 0, 2, 0, 2 ],
-		[ 1, 1, 1, 0, 2, 1, 1, 0, 1, 0, 1, 1, 1, 1, 2, 2, 2, 1, 2, 0, 0, 2, 1, 0, 1, 2, 0, 1, 2, 2 ],
-		[ 0, 1, 2, 2, 0, 2, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1, 1, 0, 0, 1, 2, 1, 2, 2, 1, 0, 2 ],
-		[ 1, 0, 2, 2, 2, 0, 1, 1, 0, 0, 1, 0, 2, 1, 1, 1, 1, 0, 1, 2, 0, 2, 2, 1, 0, 2, 0, 1, 2, 2 ],
-		[ 1, 1, 0, 2, 0, 0, 1, 0, 0, 2, 1, 1, 2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 2, 1, 0, 0, 0, 2, 1 ],
-		[ 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 2, 2, 1, 2, 0, 1, 0, 2, 0, 0, 2, 1, 1, 1, 1, 1, 2, 0, 2, 0 ],
-		[ 2, 1, 2, 2, 2, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 1, 1, 2, 2, 2, 2, 0, 1, 0, 0, 2, 1, 1 ],
-		[ 1, 1, 1, 1, 0, 0, 1, 1, 2, 0, 1, 1, 1, 2, 2, 1, 2, 0, 2, 0, 0, 1, 0, 2, 0, 2, 0, 0, 2, 1 ],
-		[ 0, 1, 1, 2, 0, 2, 0, 2, 0, 0, 1, 0, 2, 1, 0, 1, 1, 0, 2, 1, 1, 2, 2, 2, 2, 0, 1, 0, 2, 0 ],
-		[ 1, 2, 0, 1, 2, 0, 0, 2, 0, 0, 0, 2, 2, 2, 2, 1, 0, 2, 1, 0, 0, 1, 1, 2, 1, 2, 2, 1, 1, 0 ],
-		[ 2, 1, 1, 1, 2, 1, 0, 1, 0, 1, 2, 0, 0, 0, 0, 0, 1, 2, 2, 2, 0, 0, 1, 1, 0, 2, 2, 1, 2, 1 ],
-		[ 0, 1, 0, 1, 0, 1, 0, 2, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 2, 0, 1, 1, 2, 2, 2, 0, 0 ],
-		[ 1, 0, 2, 0, 0, 2, 0, 0, 2, 0, 1, 2, 1, 1, 2, 1, 2, 2, 0, 1, 0, 2, 1, 0, 1, 0, 1, 1, 2, 2 ],
-		[ 2, 0, 0, 1, 1, 2, 0, 2, 2, 1, 1, 1, 2, 1, 0, 1, 2, 1, 2, 1, 2, 0, 1, 2, 1, 1, 2, 2, 0, 0 ] 
-	];
-
-
-	// Load Terrain from File
-/*  protobuf.load('./src/test/terrain.proto', function(err, root) {
-		// var data = fs.readFileSync(`./src/ipc/terrain files/terrain_level${level}.txt`);
-		var data = fs.readFileSync('./src/ipc/terrain files/terrain_level01.txt');
+	var terrainArray = [];
+	protobuf.load('./src/ipc/proto/terrain.proto', function(err, root) {
+		// var data = fs.readFileSync(`./src/ipc/terrain files/terrain_level${level}`);
+		var data = fs.readFileSync('./src/ipc/terrain/terrain_level01');
 		var message = root.lookup("IPC.Terrain");
 		var terrainTemp = message.decode(data);
+		gridSize = terrainTemp.sizeOfElement.low;
 
-		var terrainArray = [];
-		for (var i = 0; i < terrainTemp.size; i++) {
+		for (var i = 0; i < terrainTemp.noOfRows.low; i++) {
 			terrainArray[i] = [];
-			for (var j = 0; j < terrainTemp.size; j++) {
+			for (var j = 0; j < terrainTemp.noOfRows.low; j++) {
 				terrainArray[i][j] = terrainTemp.row[i].element[j].type;
 			}
 		}
-		return terrainArray;
-	});*/
+	});
+
+	return terrainArray;
 }
 
 function getVisiblityAll() {
@@ -207,6 +170,7 @@ function getVisiblityAll() {
 }
 
 function loadTerrain() {
+	visibilityArray[0] = getVisiblityAll();
 	terrainVisibility = visibilityArray[1];
 
 	for (var i = 0; i < terrain.length; i++) {
@@ -219,14 +183,14 @@ function loadTerrain() {
 			else if (terrain[i][j] === 2)
 				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.mountain.texture);
 
-			grid[i][j].setTransform(gridW * i, gridH * j, 0.8, 0.8);
+			grid[i][j].setTransform(gridSize * i, gridSize * j, gridSize/256, gridSize/256); // 256 is the image's size.
 			stage.addChild(grid[i][j]);
 		}
 	}
 
 	map = {
-		width: gridW * grid[0].length,
-		height: gridH * grid.length
+		width: gridSize * grid[0].length,
+		height: gridSize * grid.length
 	};
 	zoom.init = map.width;
 }
@@ -236,7 +200,7 @@ function loadFog() {
 		fog[i] = [];
 		for (var j = 0; j < terrain[i].length; j++) {
 			fog[i][j] = new PIXI.Sprite(PIXI.loader.resources.fog.texture);
-			fog[i][j].setTransform(gridW * i, gridH * j, 0.8, 0.8);
+			fog[i][j].setTransform(gridSize * i, gridSize * j, 0.8, 0.8);
 			stage.addChild(fog[i][j]);
 		}
 	}
