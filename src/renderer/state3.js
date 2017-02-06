@@ -6,6 +6,7 @@ var child;
 
 var stateVariable,
 	terrain,
+	messages = [],
 	started = false,
 	actors = [],
 	towers = [],
@@ -104,6 +105,11 @@ function setArrays(data, state) {
 		visibilityArray[1] = terrainVisibility1;
 		visibilityArray[2] = terrainVisibility2;
 	}
+
+	for (var i = 0; i < stateVariable.userLogs.length; i++) {
+		messages.push(stateVariable.userLogs[i]);
+	}
+	stateVariable.userLogs = [];
 
 	if (!started) {
 		terrain = getTerrain();
