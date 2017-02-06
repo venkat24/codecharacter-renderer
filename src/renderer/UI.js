@@ -140,17 +140,17 @@ document.body.addEventListener("mousedown", function(e) {
 
 function screenPosition() {
 	if ( !(up && down) ) {
-		if (up && camera.vel.y < 16)
-			camera.vel.y += 1.6;
-		if (down && camera.vel.y > -16)
-			camera.vel.y -= 1.6;
+		if (up && camera.vel.y < 50)
+			camera.vel.y += 5;
+		if (down && camera.vel.y > -50)
+			camera.vel.y -= 5;
 	}
 
 	if ( !(left && right) ) {
-		if (left && camera.vel.x < 16)
-			camera.vel.x += 1.6;
-		if (right && camera.vel.x > -16)
-			camera.vel.x -= 1.6;
+		if (left && camera.vel.x < 50)
+			camera.vel.x += 5;
+		if (right && camera.vel.x > -50)
+			camera.vel.x -= 5;
 	}
 
 	if (camera.vel.x < 0.01 && camera.vel.x > -0.01)
