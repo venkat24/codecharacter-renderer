@@ -22,7 +22,6 @@ function exit() {
 			menu.visible = true;
 		}, 500);
 	}
-
 }
 
 function play() {
@@ -46,14 +45,14 @@ function restart() {
 		fade.style.zIndex = 10;
 		fade.style.opacity = 1;
 		resetConsole();
+		child.kill();
+		ipcRenderer.send('pid-message', null);
 
 		setTimeout(function() {
-			losState = 1;
-			document.getElementById('losImg').src = `assets/los1.png`;
-
-			child.stdin.write(`2${level}12\n`);
 			endGame();
-			loadGame();
+			started = false;
+			rendererState = 4;
+			loadChild();
 		}, 500);
 	}
 }
@@ -100,9 +99,12 @@ function loadChild() {
 
 function startGame() {
 	if (rendererState != 3) {
-		child.stdin.write(`2${level}12\n`);
 		losState = 1;
 		document.getElementById('losImg').src = `assets/los1.png`;
+		document.getElementById('playSvg').src = 'assets/pause.svg';
+		document.getElementById('playDescription').innerHTML = 'Pause';
+		gameState = "play";
+		child.stdin.write(`2${level}12\n`);
 
 		setTimeout(function() {
 			if (rendererState == 2)

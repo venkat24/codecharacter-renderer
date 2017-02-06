@@ -47,11 +47,10 @@ PIXI.loader
 	.add("mountain", "./assets/mountain.jpg")
 	.add("fog", "./assets/fog.png")
 	.add("base", "./assets/base.png")
-	.add("actor", "./assets/bunny.png") // FOR TESTING ONLY.
 	.add("sword", "./assets/swordsman.png")
 	.add("attack", "./assets/attack.png")
-	// .add("magician", "./assets/magician.png")
-	// .add("cavalry", "./assets/cavalry.png")
+	.add("magician", "./assets/magician.png")
+	.add("scout", "./assets/scout.png")
 	.add("king", "./assets/king.png")
 	.add("tower0", "./assets/tower0.png")
 	.add("tower1", "./assets/tower1.png")
