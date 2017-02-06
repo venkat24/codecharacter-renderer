@@ -17,6 +17,16 @@ var stateVariable,
 
 function setArrays(data, state) {
 	stateVariable = state.decode(data);
+
+	if (stateVariable.exitStatus) {
+		console.log(stateVariable.exitStatus);
+		child.on('close', (data) => {
+			console.log('exiting');
+			exit();
+		});
+		child.stdin.write('0\n');
+	}
+
 	var tempState = stateVariable.actors;
 	if (tempState.length > stateVariable.noOfActors.low)
 		tempState.splice(stateVariable.noOfActors.low, tempState.length - stateVariable.noOfActors.low);
@@ -34,6 +44,9 @@ function setArrays(data, state) {
 		fireBalls = [];
 		bases = [];
 	}
+	for (var sprite of fireBallSprites) {
+		stage.removeChild(sprite);
+	}
 
 	for (var i = 0; i < tempState.length; i++) {
 		if (tempState[i].actorType == 1) {
@@ -46,6 +59,7 @@ function setArrays(data, state) {
 			}
 			fireBalls[fireBallCount].center = {};
 			fireBallCount++;
+			loadFireBalls();
 		}
 		else if (tempState[i].actorType == 2) {
 			bases[baseCount] = {};
@@ -141,7 +155,6 @@ var animatedSprite = {
 
 function loadGame() {
 	loadTerrain();
-	loadFireBalls();
 	loadActors();
 	loadTowers();
 	loadFlags();
@@ -226,13 +239,12 @@ function loadActors() {
 				actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.sword.texture);
 			else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.attack.texture);
 		}
-		// else if (actors[i].actorType === 0)
-		//  actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.magician.texture);
-		// else if (actors[i].actorType == 5)
-		//  actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.cavalry.texture);
+		else if (actors[i].actorType === 0)
+			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.magician.texture);
+		else if (actors[i].actorType == 5)
+			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.scout.texture);
 		else if (actors[i].actorType == 4)
 			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
-		else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.actor.texture); //FOR TESTING
 
 		actorSprites[i].setTransform(actors[i].x, actors[i].y);
 		stage.addChild(actorSprites[i]);
@@ -245,7 +257,6 @@ function loadTowers() {
 			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower1.texture);
 		else if (towers[i].playerId == 1)
 			towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower2.texture);
-		else towerSprites[i] = new PIXI.Sprite(PIXI.loader.resources.tower0.texture);
 
 		towers[i].currentID = towers[i].playerId;
 		towers[i].lastSeenID = towers[i].playerId;
@@ -256,13 +267,13 @@ function loadTowers() {
 
 function loadHP() {
 	for (var i = 0; i < actors.length; i++) {
-		var health = actors[i].HP/actors[i].maxHP;
+		var health = actors[i].hp/actors[i].maxHp;
 		actorHP[i] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
 		actorHP[i].setTransform(actors[i].x - 5, actors[i].y - 12, health, 1);
 		stage.addChild(actorHP[i]);
 	}
 	for (var i = 0; i < towers.length; i++) {
-		var health = towers[i].HP/towers[i].maxHP;
+		var health = towers[i].hp/towers[i].maxHp;
 		towerHP[i] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
 		towerHP[i].setTransform(towers[i].x - 5, towers[i].y - 12, health, 1);
 		stage.addChild(towerHP[i]);
@@ -282,6 +293,10 @@ function loadFlags() {
 }
 
 function loadFireBalls() {
+	for (var sprite of fireBallSprites) {
+		stage.removeChild(sprite);
+	}
+
 	for (var i = 0; i < fireBalls.length; i++) {
 		fireBallSprites[i] = new PIXI.Sprite(PIXI.loader.resources.fireBall.texture);
 
