@@ -11,8 +11,8 @@ var stateVariable,
 	towers = [],
 	flags = [],
 	fireBalls = [],
-	bases = [];
-	visibilityArray = [];
+	bases = [],
+	visibilityArray = [getVisiblityAll(), getVisiblityAll(), getVisiblityAll()];
 
 function setArrays(data, state) {
 	stateVariable = state.decode(data);
@@ -25,6 +25,14 @@ function setArrays(data, state) {
 		flagCount = 0,
 		baseCount = 0,
 		fireBallCount = 0;
+
+	if (tempState.length == stateVariable.noOfActors.low) {
+		actors = [];
+		towers = [];
+		flags = [];
+		fireBalls = [];
+		bases = [];
+	}
 
 	for (var i = 0; i < tempState.length; i++) {
 		if (tempState[i].actorType == 1) {
@@ -82,20 +90,20 @@ function setArrays(data, state) {
 		}
 	}
 
-
-	terrainVisibility1 = [];
-	terrainVisibility2 = [];
-	for (var i = 0; i < stateVariable.player1Los.row.length; i++) {
-		terrainVisibility1[i] = [];
-		terrainVisibility2[i] = [];
-		for (var j = 0; j < stateVariable.player1Los.row[i].element.length; j++) {
-			terrainVisibility1[i][j] = stateVariable.player1Los.row[i].element[j];
-			terrainVisibility2[i][j] = stateVariable.player2Los.row[i].element[j];
+	if (stateVariable.player1Los && stateVariable.player2Los) {
+		terrainVisibility1 = [];
+		terrainVisibility2 = [];
+		for (var i = 0; i < stateVariable.player1Los.row.length; i++) {
+			terrainVisibility1[i] = [];
+			terrainVisibility2[i] = [];
+			for (var j = 0; j < stateVariable.player1Los.row[i].element.length; j++) {
+				terrainVisibility1[i][j] = stateVariable.player1Los.row[i].element[j];
+				terrainVisibility2[i][j] = stateVariable.player2Los.row[i].element[j];
+			}
 		}
+		visibilityArray[1] = terrainVisibility1;
+		visibilityArray[2] = terrainVisibility2;
 	}
-
-	visibilityArray[1] = terrainVisibility1;
-	visibilityArray[2] = terrainVisibility2;
 
 	if (!started) {
 		terrain = getTerrain();
@@ -159,9 +167,9 @@ function getTerrain() {
 
 function getVisiblityAll() {
 	var arr = [];
-	for (var i = 0; i < terrain.length; i++) {
+	for (var i = 0; i < 30; i++) {
 		arr[i] = [];
-		for (var j = 0; j < terrain.length; j++) {
+		for (var j = 0; j < 30; j++) {
 			arr[i][j] = 2;
 		}
 	}
@@ -170,7 +178,6 @@ function getVisiblityAll() {
 }
 
 function loadTerrain() {
-	visibilityArray[0] = getVisiblityAll();
 	terrainVisibility = visibilityArray[1];
 
 	for (var i = 0; i < terrain.length; i++) {
