@@ -8,8 +8,6 @@ function render() {
 		document.body.appendChild(renderer.view);
 	}
 
-	// Console Update
-	consoleUpdate();
 
 	if (rendererState == 1) {
 		menu.width = width;
@@ -18,6 +16,9 @@ function render() {
 	}
 
 	if(rendererState == 3) {
+		// Console Update
+		consoleUpdate();
+
 		// Panning and Zooming Functionality
 		screenPosition();
 		screenZoom();
@@ -32,9 +33,14 @@ function render() {
 }
 
 function consoleUpdate() {
-	if (message !== null) {
-		consoleMessages.innerHTML += "<li>" + message + "</li>";
-		message = null;
+	if (messages.toString() !== "") {
+		for (var i = 0; i < messages.length; i++) {
+			consoleMessages.innerHTML += "<li>" + messages[i] + "</li>";
+		}
+		messages = [];
+		while (consoleMessages.childElementCount > 75) {
+			consoleMessages.removeChild(consoleMessages.childNodes[0]);
+		}
 	}
 }
 
