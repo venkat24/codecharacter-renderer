@@ -18,8 +18,6 @@ function render() {
 	}
 
 	if(rendererState == 3) {
-		// For animation testing purposes
-
 		// Panning and Zooming Functionality
 		screenPosition();
 		screenZoom();
@@ -55,15 +53,17 @@ function init() {
 		for (var i = 0; i < towers.length; i++) {
 			findCenter(towers[i], towerSprites[i]);
 		}
-		for (var i = 0; i < fireBalls.length; i++) {
-			findCenter(fireBalls[i], fireBallSprites[i]);
-		}
+		// for (var i = 0; i < fireBalls.length; i++) {
+		// 	findCenter(fireBalls[i], fireBallSprites[i]);
+		// }
 	}
 }
 
 function findCenter(object, sprite) {
-	object.center.x = object.x + sprite.width/2;
-	object.center.y = object.y + sprite.height/2;
+	if (object && sprite) {
+		object.center.x = object.x + sprite.width/2;
+		object.center.y = object.y + sprite.height/2;
+	}
 }
 
 function update() {
@@ -138,12 +138,12 @@ function update() {
 	for (var i = 0; i < flagSprites.length; i++) {
 		flagSprites[i].setTransform(flags[i].x + change.x, flags[i].y + change.y);
 	}
-	for (var i = 0; i < fireBallSprites.length; i++) {
-		fireBallSprites[i].setTransform(fireBalls[i].x + change.x, fireBalls[i].y + change.y, 1, 1, fireBalls[i].rotation);
-		if (visibility(fireBalls[i]) == 2)
-			fireBallSprites[i].visible = true;
-		else fireBallSprites[i].visible = false;
-	}
+	// for (var i = 0; i < fireBallSprites.length; i++) {
+	// 	fireBallSprites[i].setTransform(fireBalls[i].x + change.x, fireBalls[i].y + change.y, 1, 1, fireBalls[i].rotation);
+	// 	if (visibility(fireBalls[i]) == 2)
+	// 		fireBallSprites[i].visible = true;
+	// 	else fireBallSprites[i].visible = false;
+	// }
 	for (var i = 0; i < baseSprites.length; i++) {
 		baseSprites[i].setTransform(bases[i].x + change.x - 102, bases[i].y + change.y - 102);
 	}
@@ -154,8 +154,14 @@ function update() {
 }
 
 function visibility(object) {
-	var x = Math.floor(object.center.x / gridSize),
-		y = Math.floor(object.center.y / gridSize);
+	if (object.center.x) {
+		var x = Math.floor(object.center.x / gridSize),
+			y = Math.floor(object.center.y / gridSize);
+	} else {
+		var x = Math.floor(object.x / gridSize),
+			y = Math.floor(object.y / gridSize);
+	}
+
 	if (terrainVisibility[x]) {
 		if (terrainVisibility[x][y])
 			return terrainVisibility[x][y];
