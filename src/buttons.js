@@ -10,6 +10,8 @@ function exit() {
 		fade.style.opacity = 1;
 		child.kill();
 		ipcRenderer.send('pid-message', null);
+		rendererState = 4;
+		resetConsole();
 
 		setTimeout(function() {
 			rendererState = 1;
@@ -43,6 +45,7 @@ function restart() {
 	if (rendererState == 3) {
 		fade.style.zIndex = 10;
 		fade.style.opacity = 1;
+		resetConsole();
 
 		setTimeout(function() {
 			losState = 1;
@@ -53,7 +56,6 @@ function restart() {
 			loadGame();
 		}, 500);
 	}
-
 }
 
 function los() {
@@ -150,4 +152,12 @@ function visiblitityChange() {
 			gameButtons[i].style.visibility = 'visible';
 
 	}
+}
+
+function resetConsole() {
+	userConsole.style.opacity = 0;
+	userConsole.style.width = "25%";
+	setTimeout(function() {userConsole.style.zIndex = -75}, 200);
+	userConsole.innerHTML = "<ul id='messages'></ul>";
+	consoleMessages = document.getElementById('messages');
 }
