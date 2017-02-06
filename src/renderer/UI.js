@@ -11,8 +11,7 @@ var up = false,
 	};
 
 var userConsole = document.getElementById('console'),
-	consoleMessages = document.getElementById('messages'),
-	message = null;
+	consoleMessages = document.getElementById('messages');
 
 var camera = {
 	x: 0,
@@ -45,31 +44,34 @@ document.body.addEventListener("keydown", function(e) {
 		zoom.out = true;
 	}
 	if (e.ctrlKey) {
-		if (e.keyCode == 67) {
-			if(userConsole.style.opacity == 0) {
-				userConsole.style.zIndex = 75;
-				userConsole.style.opacity = 0.6;
-			}
-			else {
-				userConsole.style.opacity = 0;
-				setTimeout(function() {userConsole.style.zIndex = -75}, 200);
-			}
-		}
-		if (e.keyCode == 76) {
-			userConsole.innerHTML = "<ul id='messages'></ul>";
-			consoleMessages = document.getElementById('messages');
-		}
-		if (e.keyCode == 70) {
-			if (userConsole.style.width != "100%")
-				userConsole.style.width = "100%";
-			else userConsole.style.width = "25%";
-		}
 		if (e.keyCode == 187 || e.keyCode == 189) {
 			e.preventDefault();
 		}
 		// For Testing
 		if (e.keyCode == 82) {
 			child.kill();
+		}
+
+		if (rendererState == 3) {
+			if (e.keyCode == 67) {
+				if(userConsole.style.opacity == 0) {
+					userConsole.style.zIndex = 75;
+					userConsole.style.opacity = 0.6;
+				}
+				else {
+					userConsole.style.opacity = 0;
+					setTimeout(function() {userConsole.style.zIndex = -75}, 200);
+				}
+			}
+			if (e.keyCode == 76) {
+				userConsole.innerHTML = "<ul id='messages'></ul>";
+				consoleMessages = document.getElementById('messages');
+			}
+			if (e.keyCode == 70) {
+				if (userConsole.style.width != "100%")
+					userConsole.style.width = "100%";
+				else userConsole.style.width = "25%";
+			}
 		}
 	}
 });
@@ -115,13 +117,6 @@ document.body.addEventListener("mousemove", function(e) {
 document.body.addEventListener("wheel", function(e) {
 	if(e.deltaY % 1 !== 0) {
 		e.preventDefault();
-	}
-	if (rendererState == 3) {
-		scroll = true;
-		if (zoom.val < 2 && e.deltaY < 0)
-			zoom.val *= 1.25;
-		if (camera.zoom * zoom.init/width >= 1 && e.deltaY > 0)
-			zoom.val /= 1.25;
 	}
 });
 document.body.addEventListener("mousedown", function(e) {

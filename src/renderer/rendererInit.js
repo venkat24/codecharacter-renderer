@@ -13,6 +13,17 @@ var webFrame = require('electron').webFrame;
 webFrame.setVisualZoomLevelLimits(1, 1);
 document.body.appendChild(renderer.view);
 
+var canvas = document.getElementsByTagName('canvas')[0];
+canvas.addEventListener("wheel", function(e) {
+	if (rendererState == 3) {
+		scroll = true;
+		if (zoom.val < 2 && e.deltaY < 0)
+			zoom.val *= 1.25;
+		if (camera.zoom * zoom.init/width >= 1 && e.deltaY > 0)
+			zoom.val /= 1.25;
+	}
+});
+
 PIXI.loader
 	.add("menu", "./assets/menu.jpg")
 	// **THE FOLLOWING TEXTURES ARE PART OF THE TEST STORY TO BE REMOVED LATER.**
