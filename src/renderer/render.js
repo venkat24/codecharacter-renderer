@@ -59,9 +59,9 @@ function init() {
 		for (var i = 0; i < towers.length; i++) {
 			findCenter(towers[i], towerSprites[i]);
 		}
-		// for (var i = 0; i < fireBalls.length; i++) {
-		// 	findCenter(fireBalls[i], fireBallSprites[i]);
-		// }
+		for (var i = 0; i < fireBalls.length; i++) {
+			findCenter(fireBalls[i], fireBallSprites[i]);
+		}
 	}
 }
 
@@ -96,62 +96,81 @@ function update() {
 		}
 	}
 	for (var i = 0; i < actorSprites.length; i++) {
-		actorSprites[i].setTransform(actors[i].x + change.x, actors[i].y + change.y);
-		if (visibility(actors[i]) == 2)
-			actorSprites[i].visible = true;
-		else actorSprites[i].visible = false;
+		if (actors[i]) {
+			actorSprites[i].setTransform(actors[i].x + change.x, actors[i].y + change.y);
+
+			if (actors[i].actorType != 5 || actors[i].playerId == losState - 1 || losState === 0) {
+				if (visibility(actors[i]) == 2)
+					actorSprites[i].visible = true;
+				else actorSprites[i].visible = false;
+			} else {
+				if (actors[i].isVisibleToEnemy)
+					actorSprites[i].visible = true;
+				else actorSprites[i].visible = false;
+			}
+		}
 	}
 	for (var i = 0; i < actorHP.length; i++) {
-		var health = actors[i].HP / actors[i].maxHP;
-		actorHP[i].setTransform(actors[i].x + change.x - 5, actors[i].y + change.y - 12, health, 1);
-		if (!actorSprites[i].visible)
-			actorHP[i].visible = false;
-		else actorHP[i].visible = true;
+		if (actors[i]) {
+			var health = actors[i].hp / actors[i].maxHp;
+			actorHP[i].setTransform(actors[i].x + change.x - 5, actors[i].y + change.y - 12, health, 1);
+			if (!actorSprites[i].visible)
+				actorHP[i].visible = false;
+			else actorHP[i].visible = true;
+		}
 	}
 	for (var i = 0; i < towerSprites.length; i++) {
-		towerSprites[i].setTransform(towers[i].x + change.x, towers[i].y + change.y);
+		if (towers[i]) {
+			towerSprites[i].setTransform(towers[i].x + change.x, towers[i].y + change.y);
 
-		var towerVisibility = visibility(towers[i]);
-		var id;
-		if (towerVisibility == 2) {
-			id = towers[i].playerId;
-			towers[i].lastSeenID = id;
-			towerSprites[i].visible = true;
-		}
-		else {
-			id = towers[i].lastSeenID;
-			if (towerVisibility == 1)
+			var towerVisibility = visibility(towers[i]);
+			var id;
+			if (towerVisibility == 2) {
+				id = towers[i].playerId;
+				towers[i].lastSeenID = id;
 				towerSprites[i].visible = true;
-			else towerSprites[i].visible = false;
-		}
+			}
+			else {
+				id = towers[i].lastSeenID;
+				if (towerVisibility == 1)
+					towerSprites[i].visible = true;
+				else towerSprites[i].visible = false;
+			}
 
-		if (towers[i].currentID != id) {
-			towers[i].currentID = towers[i].playerId;
-			if (towers[i].playerId === 0)
-				towerSprites[i].texture = PIXI.loader.resources.tower1.texture;
-			else if (towers[i].playerId == 1)
-				towerSprites[i].texture = PIXI.loader.resources.tower2.texture;
-			else towerSprites[i].texture = PIXI.loader.resources.tower0.texture;
+			if (towers[i].currentID != id) {
+				towers[i].currentID = towers[i].playerId;
+				if (towers[i].playerId === 0)
+					towerSprites[i].texture = PIXI.loader.resources.tower1.texture;
+				else if (towers[i].playerId == 1)
+					towerSprites[i].texture = PIXI.loader.resources.tower2.texture;
+				else towerSprites[i].texture = PIXI.loader.resources.tower0.texture;
+			}
 		}
 	}
 	for (var i = 0; i < towerHP.length; i++) {
-		var health = towers[i].HP / towers[i].maxHP;
-		towerHP[i].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 12, health, 1);
-		if (visibility(towers[i]) == 2)
-			towerHP[i].visible = true;
-		else towerHP[i].visible = false;
+		if (towers[i]) {
+			var health = towers[i].hp / towers[i].maxHp;
+			towerHP[i].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 12, health, 1);
+			if (visibility(towers[i]) == 2)
+				towerHP[i].visible = true;
+			else towerHP[i].visible = false;
+		}
 	}
 	for (var i = 0; i < flagSprites.length; i++) {
-		flagSprites[i].setTransform(flags[i].x + change.x, flags[i].y + change.y);
+		if (flags[i])
+			flagSprites[i].setTransform(flags[i].x + change.x, flags[i].y + change.y);
 	}
-	// for (var i = 0; i < fireBallSprites.length; i++) {
-	// 	fireBallSprites[i].setTransform(fireBalls[i].x + change.x, fireBalls[i].y + change.y, 1, 1, fireBalls[i].rotation);
-	// 	if (visibility(fireBalls[i]) == 2)
-	// 		fireBallSprites[i].visible = true;
-	// 	else fireBallSprites[i].visible = false;
-	// }
+	for (var i = 0; i < fireBallSprites.length; i++) {
+		if (fireBalls[i]) {
+			fireBallSprites[i].setTransform(fireBalls[i].x + change.x, fireBalls[i].y + change.y, 1, 1, fireBalls[i].rotation);
+			if (visibility(fireBalls[i]) == 2)
+				fireBallSprites[i].visible = true;
+			else fireBallSprites[i].visible = false;
+		}
+	}
 	for (var i = 0; i < baseSprites.length; i++) {
-		baseSprites[i].setTransform(bases[i].x + change.x - 102, bases[i].y + change.y - 102);
+		if (bases[i])
+			baseSprites[i].setTransform(bases[i].x + change.x - 102, bases[i].y + change.y - 102);
 	}
 
 	// FOR TESTING ONLY
