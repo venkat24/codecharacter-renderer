@@ -232,11 +232,86 @@ li {
   margin: 5px 0px 5px 5px;
 }
 
+div#score {
+  position: absolute;
+  right: 0px;
+  bottom: 2px;
+  padding: 10px 15px;
+  background-color: white;
+  opacity: 0.8;
+  z-index: 50;
+  font-size: 3em;
+  visibility: hidden;
+  transition: 1s;
+}
+
+#score div, #result div {
+  display: inline-block;
+  padding: 2px 7px;
+}
+
+.score1 {
+  color: green;
+}
+
+.break {
+  margin: 0px 3px;
+  transform: translate(0, -3px);
+}
+
+.score2 {
+  color: red;
+}
+
+div#end-screen {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background-color: black;
+  z-index: -10;
+  opacity: 0;
+  transition: 1s;
+}
+
+#outcome {
+  font-size: 4em;
+  color: white;
+  position: relative;
+  top: 30%;
+}
+
+#result {
+  font-size: 3em;
+  position: relative;
+  top: 40%;
+}
+
+div.blink {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  bottom: 10px;
+  margin: 10px;
+  font-size: 1.5em;
+  color: white;
+  animation: blink 1s ease-in-out infinite alternate;
+  opacity: 1;
+  z-index: -10;
+  transition: 1s;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  90% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
 div#fade {
   position: absolute;
   width: 100%;
   height: 100%;
-  z-index: 10;
+  z-index: 100;
   background-color: black;
   opacity: 1;
   transition: 0.5s;
