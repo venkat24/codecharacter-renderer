@@ -64,8 +64,7 @@ document.body.addEventListener("keydown", function(e) {
 				}
 			}
 			if (e.keyCode == 76) {
-				userConsole.innerHTML = "<ul id='messages'></ul>";
-				consoleMessages = document.getElementById('messages');
+				consoleMessages.innerHTML = "";
 			}
 			if (e.keyCode == 70) {
 				if (userConsole.style.width != "100%")
@@ -130,6 +129,9 @@ document.body.addEventListener("mousedown", function(e) {
 		} else if (e.button == 2) {
 			loadChild();
 		}
+	}
+	if (rendererState == 4) {
+		exit();
 	}
 });
 
