@@ -19,10 +19,11 @@ function setArrays(data, state) {
 	stateVariable = state.decode(data);
 
 	if (stateVariable.exitStatus) {
-		console.log(stateVariable.exitStatus);
 		child.on('close', (data) => {
-			console.log('exiting');
-			exit();
+			rendererState = 4;
+			document.getElementById('result1').innerHTML = stateVariable.scorePlayer1;
+			document.getElementById('result2').innerHTML = stateVariable.scorePlayer2;
+			displayScore();
 		});
 		child.stdin.write('0\n');
 	}
@@ -44,8 +45,8 @@ function setArrays(data, state) {
 		fireBalls = [];
 		bases = [];
 	}
-	for (var sprite of fireBallSprites) {
-		stage.removeChild(sprite);
+	for (var i = 0; i < fireBallSprites.length; i++) {
+		stage.removeChild(fireBallSprites[i]);
 	}
 
 	for (var i = 0; i < tempState.length; i++) {
@@ -120,10 +121,12 @@ function setArrays(data, state) {
 		visibilityArray[2] = terrainVisibility2;
 	}
 
-	for (var i = 0; i < stateVariable.userLogs.length; i++) {
-		messages.push(stateVariable.userLogs[i]);
+	if (stateVariable.userLogs) {
+		for (var i = 0; i < stateVariable.userLogs.length; i++) {
+			messages.push(stateVariable.userLogs[i]);
+		}
+		stateVariable.userLogs = [];
 	}
-	stateVariable.userLogs = [];
 
 	if (!started) {
 		terrain = getTerrain();
@@ -167,7 +170,7 @@ function loadGame() {
 function getTerrain() {
 	var terrainArray = [];
 	protobuf.load('./src/ipc/proto/terrain.proto', function(err, root) {
-		// var data = fs.readFileSync(`./src/ipc/terrain files/terrain_level${level}`);
+		// var data = fs.readFileSync("./src/ipc/terrain files/terrain_level"+level);
 		var data = fs.readFileSync('./src/ipc/terrain/terrain_level01');
 		var message = root.lookup("IPC.Terrain");
 		var terrainTemp = message.decode(data);
@@ -293,8 +296,8 @@ function loadFlags() {
 }
 
 function loadFireBalls() {
-	for (var sprite of fireBallSprites) {
-		stage.removeChild(sprite);
+	for (var i = 0; i < fireBallSprites.length; i++) {
+		stage.removeChild(fireBallSprites[i]);
 	}
 
 	for (var i = 0; i < fireBalls.length; i++) {
@@ -343,10 +346,38 @@ function fadeIn() {
 	zoom.val = 0.6;
 }
 
+function displayScore() {
+	document.getElementById('end-screen').style.zIndex = 80;
+	document.getElementById('end-screen').style.opacity = 1;
+	document.getElementById('lclick').style.zIndex = 90;
+	document.getElementById('lclick').style.opacity = 1;
+	document.getElementById('score').style.visibility = 'hidden';
+
+	if (stateVariable.scorePlayer1 > stateVariable.scorePlayer2) {
+		document.getElementById('outcome').innerHTML = "YOU WON";
+		document.getElementById('outcome').style.color = "green";
+	} else if (stateVariable.scorePlayer1 < stateVariable.scorePlayer2) {
+		document.getElementById('outcome').innerHTML = "YOU LOST";
+		document.getElementById('outcome').style.color = "red";
+	} else {
+		document.getElementById('outcome').innerHTML = "DRAW";
+		document.getElementById('outcome').style.color = "white";
+	}
+
+	while (stage.children.length > 1) {
+		n = stage.getChildAt(1);
+		stage.removeChild(n);
+	}
+}
+
 function endGame() {
 	while (stage.children.length > 1) {
 		n = stage.getChildAt(1);
 		stage.removeChild(n);
 	}
+	document.getElementById('score1').innerHTML = '0';
+	document.getElementById('score2').innerHTML = '0';
+	document.getElementById('result1').innerHTML = '0';
+	document.getElementById('result2').innerHTML = '0';
 	setTimeout(fadeIn, 500);
 }

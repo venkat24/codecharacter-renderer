@@ -19,6 +19,9 @@ function render() {
 		// Console Update
 		consoleUpdate();
 
+		// Score Update
+		scoreUpdate();
+
 		// Panning and Zooming Functionality
 		screenPosition();
 		screenZoom();
@@ -41,6 +44,13 @@ function consoleUpdate() {
 		while (consoleMessages.childElementCount > 75) {
 			consoleMessages.removeChild(consoleMessages.childNodes[0]);
 		}
+	}
+}
+
+function scoreUpdate() {
+	if (stateVariable.scorePlayer1 && stateVariable.scorePlayer2) {
+		document.getElementById('score1').innerHTML = stateVariable.scorePlayer1;
+		document.getElementById('score2').innerHTML = stateVariable.scorePlayer2;
 	}
 }
 
