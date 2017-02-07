@@ -1,3 +1,12 @@
+var fs = require('fs');
+var num = fs.readFileSync('./src/ipc/codechar/level_number.txt');
+
+for (var i = 1; i <= num; i++) {
+	var div = document.createElement("div");
+	div.innerHTML = "<div class=\"menu-button\" id=\"level"+ i +"\" onclick=\"level='0"+ i +"'; startStory();\"> <div class=\"button-text\">Level "+ i +"</div></div>";
+	document.body.appendChild(div);
+}
+
 var rendererState = 1,
 	gameState = "play",
 	losState = 1,
