@@ -94,7 +94,11 @@ function startStory() {
 
 function loadChild() {
 	if (rendererState != 3) {
-		child = spawn(path.join(__dirname, 'ipc/codechar/bin/main'), ['r', level]);
+		child = spawn(path.join(__dirname, 'ipc/codechar/bin/main'), ['r', level], {
+			env: {
+				'LD_LIBRARY_PATH': path.join(__dirname, 'ipc/codechar/lib')
+			}
+		});
 		ipcRenderer.send('pid-message', child.pid);
 		fade.style.zIndex = 100;
 		fade.style.opacity = 1;
