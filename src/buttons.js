@@ -1,5 +1,6 @@
 var fs = require('fs');
-var num = fs.readFileSync('./src/ipc/codechar/level_number.txt');
+var path = require('path');
+var num = fs.readFileSync(path.join(__dirname, 'ipc/codechar/level_number.txt'));
 
 for (var i = 1; i <= num; i++) {
 	var div = document.createElement("div");
@@ -93,13 +94,13 @@ function startStory() {
 
 function loadChild() {
 	if (rendererState != 3) {
-		child = spawn('./src/ipc/codechar/bin/main');
+		child = spawn(path.join(__dirname, 'ipc/codechar/bin/main'));
 		ipcRenderer.send('pid-message', child.pid);
 		fade.style.zIndex = 100;
 		fade.style.opacity = 1;
 
 		child.stdout.on('data', (data) => {
-			protobuf.load('./src/ipc/proto/state.proto', function(err, root) {
+			protobuf.load(path.join(__dirname, 'ipc/proto/state.proto'), function(err, root) {
 				setArrays(data, root.lookup("IPC.State"));
 			});
 		});
