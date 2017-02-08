@@ -123,10 +123,16 @@ function update() {
 	for (var i = 0; i < actorHP.length; i++) {
 		if (actors[i]) {
 			var health = actors[i].hp / actors[i].maxHp;
-			actorHP[i].setTransform(actors[i].x + change.x - 5, actors[i].y + change.y - 12, health, 1);
-			if (!actorSprites[i].visible)
-				actorHP[i].visible = false;
-			else actorHP[i].visible = true;
+			actorHP[i][0].setTransform(actors[i].x + change.x - 5, actors[i].y + change.y - 12, health, 1);
+			actorHP[i][1].setTransform(actors[i].x + change.x - 6, actors[i].y + change.y - 13);
+			if (!actorSprites[i].visible) {
+				actorHP[i][0].visible = false;
+				actorHP[i][1].visible = false;
+			}
+			else {
+				actorHP[i][0].visible = true;
+				actorHP[i][1].visible = true;
+			}
 		}
 	}
 	for (var i = 0; i < towerSprites.length; i++) {
@@ -159,9 +165,10 @@ function update() {
 			}
 
 			towerHP[i][0].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 12, health, 1);
-			towerHP[i][1].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 20, scale1, 1);
+			towerHP[i][1].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 26, scale1, 1);
 			towerHP[i][2].setTransform(towerHP[i][1].x + towerHP[i][1].width, towerHP[i][1].y, scale2, 1);
 			towerHP[i][3].setTransform(towerHP[i][1].x + towerHP[i][1].width, towerHP[i][1].y + 3.5);
+			towerHP[i][4].setTransform(towers[i].x + change.x - 6, towers[i].y + change.y - 13);
 
 			if (visibility(towers[i]) == 2) {
 				if (health !== 0) {
@@ -176,7 +183,7 @@ function update() {
 					}
 				}
 			} else {
-				for (var j = 0; j < 4; j++) {
+				for (var j = 0; j < 5; j++) {
 					towerHP[i][j].visible = false
 				}
 			}
