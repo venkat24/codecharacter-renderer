@@ -49,8 +49,8 @@ function consoleUpdate() {
 
 function scoreUpdate() {
 	if (stateVariable.scorePlayer1 && stateVariable.scorePlayer2) {
-		document.getElementById('score1').innerHTML = stateVariable.scorePlayer1;
-		document.getElementById('score2').innerHTML = stateVariable.scorePlayer2;
+		document.getElementById('score1').innerHTML = stateVariable.scorePlayer1.low;
+		document.getElementById('score2').innerHTML = stateVariable.scorePlayer2.low;
 	}
 }
 
@@ -133,37 +133,53 @@ function update() {
 		if (towers[i]) {
 			towerSprites[i].setTransform(towers[i].x + change.x, towers[i].y + change.y);
 
-			var towerVisibility = visibility(towers[i]);
-			var id;
-			if (towerVisibility == 2) {
-				id = towers[i].playerId;
-				towers[i].lastSeenID = id;
-				towerSprites[i].visible = true;
-			}
-			else {
-				id = towers[i].lastSeenID;
-				if (towerVisibility == 1)
-					towerSprites[i].visible = true;
-				else towerSprites[i].visible = false;
-			}
+			if (towers[i].playerId === 0)
+				towerSprites[i].texture = PIXI.loader.resources.tower1.texture;
+			else if (towers[i].playerId == 1)
+				towerSprites[i].texture = PIXI.loader.resources.tower2.texture;
 
-			if (towers[i].currentID != id) {
-				towers[i].currentID = towers[i].playerId;
-				if (towers[i].playerId === 0)
-					towerSprites[i].texture = PIXI.loader.resources.tower1.texture;
-				else if (towers[i].playerId == 1)
-					towerSprites[i].texture = PIXI.loader.resources.tower2.texture;
-				else towerSprites[i].texture = PIXI.loader.resources.tower0.texture;
-			}
+			if (visibility(towers[i]) !== 0)
+				towerSprites[i].visible = true;
+			else towerSprites[i].visible = false;
 		}
 	}
 	for (var i = 0; i < towerHP.length; i++) {
 		if (towers[i]) {
 			var health = towers[i].hp / towers[i].maxHp;
-			towerHP[i].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 12, health, 1);
-			if (visibility(towers[i]) == 2)
-				towerHP[i].visible = true;
-			else towerHP[i].visible = false;
+			var captureScore = towers[i].contentionMeterScore;
+			if (captureScore > 0) {
+				var scale2 = captureScore/100;
+				var scale1 = 2 - scale2;
+			} else if (captureScore < 0) {
+				var scale1 = Math.abs(captureScore/100);
+				var scale2 = 2 - scale1;
+			} else {
+				var scale1 = 1;
+				var scale2 = 1;
+			}
+
+			towerHP[i][0].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 12, health, 1);
+			towerHP[i][1].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 20, scale1, 1);
+			towerHP[i][2].setTransform(towerHP[i][1].x + towerHP[i][1].width, towerHP[i][1].y, scale2, 1);
+			towerHP[i][3].setTransform(towerHP[i][1].x + towerHP[i][1].width, towerHP[i][1].y + 3.5);
+
+			if (visibility(towers[i]) == 2) {
+				if (health !== 0) {
+					towerHP[i][0].visible = true;
+					for (var j = 1; j < 4; j++) {
+						towerHP[i][j].visible = false;
+					}
+				} else {
+					towerHP[i][0].visible = false;
+					for (var j = 1; j < 4; j++) {
+						towerHP[i][j].visible = true;
+					}
+				}
+			} else {
+				for (var j = 0; j < 4; j++) {
+					towerHP[i][j].visible = false
+				}
+			}
 		}
 	}
 	for (var i = 0; i < flagSprites.length; i++) {

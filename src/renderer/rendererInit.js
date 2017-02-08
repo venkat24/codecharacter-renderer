@@ -59,5 +59,7 @@ PIXI.loader
 	.add("flag2", "./assets/flag2.png")
 	.add("fireBall", "./assets/fireBall.png")
 	.add("hp", "./assets/hp.jpg")
+	.add("captureP1", "./assets/capture_p1.jpg")
+	.add("captureP2", "./assets/capture_p2.jpg")
 	.add("running", "./assets/running.png") // FOR TESTING ONLY. There will be no 'running' asset in the final version.
 	.load(setup);
