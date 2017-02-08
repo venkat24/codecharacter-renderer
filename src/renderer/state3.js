@@ -270,10 +270,14 @@ function loadTowers() {
 
 function loadHP() {
 	for (var i = 0; i < actors.length; i++) {
+		actorHP[i] = [];
 		var health = actors[i].hp/actors[i].maxHp;
-		actorHP[i] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
-		actorHP[i].setTransform(actors[i].x - 5, actors[i].y - 12, health, 1);
-		stage.addChild(actorHP[i]);
+		actorHP[i][0] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
+		actorHP[i][0].setTransform(actors[i].x - 5, actors[i].y - 12, health, 1);
+		actorHP[i][1] = new PIXI.Sprite(PIXI.loader.resources.border.texture);
+		actorHP[i][1].setTransform(actors[i].x - 6, actors[i].y - 13);
+		stage.addChild(actorHP[i][0]);
+		stage.addChild(actorHP[i][1]);
 	}
 	for (var i = 0; i < towers.length; i++) {
 		towerHP[i] = [];
@@ -282,10 +286,10 @@ function loadHP() {
 		towerHP[i][0].setTransform(towers[i].x - 5, towers[i].y - 12, health, 1);
 
 		towerHP[i][1] = new PIXI.Sprite(PIXI.loader.resources.captureP1.texture);
-		towerHP[i][1].setTransform(towers[i].x - 5, towers[i].y - 12, health/2, 1);
+		towerHP[i][1].setTransform(towers[i].x - 5, towers[i].y - 27, health/2, 1);
 
 		towerHP[i][2] = new PIXI.Sprite(PIXI.loader.resources.captureP2.texture);
-		towerHP[i][2].setTransform(towers[i].x + 38, towers[i].y - 12, health/2, 1);
+		towerHP[i][2].setTransform(towers[i].x + 38, towers[i].y - 27, health/2, 1);
 
 		towerHP[i][3] = new PIXI.Graphics();
 		towerHP[i][3].beginFill(0xFFFFFF);
@@ -293,7 +297,10 @@ function loadHP() {
 		towerHP[i][3].drawCircle(0, 0, 5);
 		towerHP[i][3].setTransform(towers[i].x + 38, towers[i].y - 8);
 
-		for (var j = 0; j < 4; j++) {
+		towerHP[i][4] = new PIXI.Sprite(PIXI.loader.resources.border.texture);
+		towerHP[i][4].setTransform(towers[i].x - 6, towers[i].y - 13);
+
+		for (var j = 0; j < 5; j++) {
 			stage.addChild(towerHP[i][j]);
 		}
 	}
