@@ -169,9 +169,9 @@ function loadGame() {
 
 function getTerrain() {
 	var terrainArray = [];
-	protobuf.load('./src/ipc/proto/terrain.proto', function(err, root) {
+	protobuf.load(path.join(__dirname, 'ipc/proto/terrain.proto'), function(err, root) {
 		// var data = fs.readFileSync("./src/ipc/terrain files/terrain_level"+level);
-		var data = fs.readFileSync('./src/ipc/terrain/terrain_level01');
+		var data = fs.readFileSync(path.join(__dirname, 'ipc/terrain/terrain_level01'));
 		var message = root.lookup("IPC.Terrain");
 		var terrainTemp = message.decode(data);
 		gridSize = terrainTemp.sizeOfElement.low;
