@@ -21,8 +21,8 @@ function setArrays(data, state) {
 	if (stateVariable.exitStatus) {
 		child.on('close', (data) => {
 			rendererState = 4;
-			document.getElementById('result1').innerHTML = stateVariable.scorePlayer1;
-			document.getElementById('result2').innerHTML = stateVariable.scorePlayer2;
+			document.getElementById('result1').innerHTML = stateVariable.scorePlayer1.low;
+			document.getElementById('result2').innerHTML = stateVariable.scorePlayer2.low;
 			displayScore();
 		});
 		child.stdin.write('0\n');
@@ -238,7 +238,7 @@ function loadFog() {
 function loadActors() {
 	for (var i = 0; i < actors.length; i++) {
 		if (actors[i].actorType == 6) {
-			if (!actors[i].attack)
+			if (!actors[i].isAttacking)
 				actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.sword.texture);
 			else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.attack.texture);
 		}
@@ -276,10 +276,26 @@ function loadHP() {
 		stage.addChild(actorHP[i]);
 	}
 	for (var i = 0; i < towers.length; i++) {
+		towerHP[i] = [];
 		var health = towers[i].hp/towers[i].maxHp;
-		towerHP[i] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
-		towerHP[i].setTransform(towers[i].x - 5, towers[i].y - 12, health, 1);
-		stage.addChild(towerHP[i]);
+		towerHP[i][0] = new PIXI.Sprite(PIXI.loader.resources.hp.texture);
+		towerHP[i][0].setTransform(towers[i].x - 5, towers[i].y - 12, health, 1);
+
+		towerHP[i][1] = new PIXI.Sprite(PIXI.loader.resources.captureP1.texture);
+		towerHP[i][1].setTransform(towers[i].x - 5, towers[i].y - 12, health/2, 1);
+
+		towerHP[i][2] = new PIXI.Sprite(PIXI.loader.resources.captureP2.texture);
+		towerHP[i][2].setTransform(towers[i].x + 38, towers[i].y - 12, health/2, 1);
+
+		towerHP[i][3] = new PIXI.Graphics();
+		towerHP[i][3].beginFill(0xFFFFFF);
+		towerHP[i][3].lineStyle(1, 0x000000);
+		towerHP[i][3].drawCircle(0, 0, 5);
+		towerHP[i][3].setTransform(towers[i].x + 38, towers[i].y - 8);
+
+		for (var j = 0; j < 4; j++) {
+			stage.addChild(towerHP[i][j]);
+		}
 	}
 }
 
@@ -353,10 +369,10 @@ function displayScore() {
 	document.getElementById('lclick').style.opacity = 1;
 	document.getElementById('score').style.visibility = 'hidden';
 
-	if (stateVariable.scorePlayer1 > stateVariable.scorePlayer2) {
+	if (stateVariable.scorePlayer1.low > stateVariable.scorePlayer2.low) {
 		document.getElementById('outcome').innerHTML = "YOU WON";
 		document.getElementById('outcome').style.color = "green";
-	} else if (stateVariable.scorePlayer1 < stateVariable.scorePlayer2) {
+	} else if (stateVariable.scorePlayer1.low < stateVariable.scorePlayer2.low) {
 		document.getElementById('outcome').innerHTML = "YOU LOST";
 		document.getElementById('outcome').style.color = "red";
 	} else {
