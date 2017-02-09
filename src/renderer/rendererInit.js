@@ -25,7 +25,7 @@ canvas.addEventListener("wheel", function(e) {
 });
 
 PIXI.loader
-	.add("menu", "./assets/menu.jpg")
+	.add("menu", "./assets/splash.png")
 	// **THE FOLLOWING TEXTURES ARE PART OF THE TEST STORY TO BE REMOVED LATER.**
 	.add("./assets/story/1.jpg")
 	.add("./assets/story/2.jpg")
@@ -42,9 +42,9 @@ PIXI.loader
 	.add("./assets/story/13.jpg")
 	.add("./assets/story/14.jpg")
 	// **..**
-	.add("forest", "./assets/forest.jpg")
-	.add("plain", "./assets/plains.jpg")
-	.add("mountain", "./assets/mountain.jpg")
+	.add("forest", "./assets/forest.png")
+	.add("plain", "./assets/Plain.png")
+	.add("mountain", "./assets/Mountains.png")
 	.add("fog", "./assets/fog.png")
 	.add("base", "./assets/base.png")
 	// .add("sword", "./assets/swordsman.png")
@@ -54,19 +54,22 @@ PIXI.loader
 	.add("wizard2", "./assets/wizard_player_2.png")
 	.add("scout1", "./assets/cavalry player 1.png")
 	.add("scout2", "./assets/cavalry player 2.png")
+	.add("king1", "./assets/king player 1.png")
+	.add("king2", "./assets/king player 2.png")
+	.add("kingFlag1", "./assets/king_with flag_player1.png")
+	.add("kingFlag2", "./assets/king_with flag_player2.png")
 	// .add("attack", "./assets/attack.png")
 	// .add("magician", "./assets/magician.png")
 	// .add("scout", "./assets/scout.png")
 	.add("king", "./assets/king.png")
-	.add("tower0", "./assets/tower0.png")
-	.add("tower1", "./assets/tower1.png")
-	.add("tower2", "./assets/tower2.png")
-	.add("flag1", "./assets/flag1.png")
-	.add("flag2", "./assets/flag2.png")
-	.add("fireBall", "./assets/fireBall.png")
+	.add("tower1", "./assets/tower_player1.png")
+	.add("tower2", "./assets/tower_player2.png")
+	.add("flag1", "./assets/flag_p1.png")
+	.add("flag2", "./assets/flag_p2.png")
+	.add("fireBall1", "./assets/ball_p1.png")
+	.add("fireBall2", "./assets/ball_p2.png")
 	.add("hp", "./assets/hp.jpg")
 	.add("border", "./assets/border.png")
 	.add("captureP1", "./assets/capture_p1.jpg")
 	.add("captureP2", "./assets/capture_p2.jpg")
-	.add("running", "./assets/running.png") // FOR TESTING ONLY. There will be no 'running' asset in the final version.
 	.load(setup);
