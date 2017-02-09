@@ -318,10 +318,47 @@ function loadActors() {
 			actorSprites[i].play();
 			actorSprites[i].state = 's';
 		}
-		else if (actors[i].actorType == 5)
-			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.scout.texture);
-		else if (actors[i].actorType == 4)
+		else if (actors[i].actorType == 5) {
+			if (actors[i].playerId === 0)
+				var base = PIXI.loader.resources.scout1.texture;
+			else var base = PIXI.loader.resources.scout2.texture;
+
+			actorTextures[i][0] = [];
+			actorTextures[i][1] = [];
+			actorTextures[i][2] = [];
+			actorTextures[i][3] = [];
+
+			for (var j = 0; j < 4; j++) {
+				var frameTexture = new PIXI.Texture(base);
+				frameTexture.frame = new PIXI.Rectangle(5 + 150*j, 0, 140, 145);
+				actorTextures[i][0][j] = [frameTexture, frameTexture];
+			}
+			for (var j = 0; j < 4; j++) {
+				actorTextures[i][1][j] = [];
+				for (var k = 0; k < 3; k++) {
+					var frameTexture = new PIXI.Texture(base);
+					frameTexture.frame = new PIXI.Rectangle(5 + 150*k, 150 + 450*j, 140, 140);
+					actorTextures[i][1][j][k] = frameTexture;
+				}
+			}
+			for (var j = 0; j < 4; j++) {
+				actorTextures[i][3][j] = [];
+				for (var k = 0; k < 3; k++) {
+					var frameTexture = new PIXI.Texture(base);
+					frameTexture.frame = new PIXI.Rectangle(5 + 150*k, 450*(j+1), 140, 98);
+					actorTextures[i][3][j][k] = frameTexture;
+				} //speed = 0.3
+			}
+			actorSprites[i] = new PIXI.extras.AnimatedSprite(actorTextures[i][0][0]);
+			actorSprites[i].animationSpeed = 0.10;
+			actorSprites[i].play();
+			actorSprites[i].state = 's';
+
+			// actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.scout.texture);
+		}
+		else if (actors[i].actorType == 4) {
 			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
+		}
 
 		actorSprites[i].setTransform(actors[i].x, actors[i].y);
 		stage.addChild(actorSprites[i]);
@@ -430,11 +467,12 @@ function animation() {
 	// spriteSheet.play();
 	// stage.addChild(spriteSheet);
 
-	var base = PIXI.loader.resources.swordsman1.texture;
+	var base = PIXI.loader.resources.scout1.texture;
 	var textures = [];
 	for (var i = 0; i < 4; i++) {
 		var frameTexture = new PIXI.Texture(base);
 		frameTexture.frame = new PIXI.Rectangle(5 + 100*i, 0, 90, 98);
+		frameTexture.frame = new PIXI.Rectangle(5 + 150*i, 150 + 450, 140, 140);
 		// frameTexture.frame = new PIXI.Rectangle(32 * i, 0, 17, 24);
 		textures[i] = frameTexture;
 	}
