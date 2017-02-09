@@ -243,6 +243,7 @@ function loadActors() {
 			if (actors[i].playerId === 0)
 				var base = PIXI.loader.resources.wizard1.texture;
 			else var base = PIXI.loader.resources.wizard2.texture;
+
 			actorTextures[i][0] = [];
 			actorTextures[i][1] = [];
 			actorTextures[i][2] = [];
@@ -273,12 +274,49 @@ function loadActors() {
 			actorSprites[i].state = 's';
 		}
 
-
-
 		else if (actors[i].actorType == 6) {
-			if (!actors[i].isAttacking)
-				actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.sword.texture);
-			else actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.attack.texture);
+			if (actors[i].playerId === 0)
+				var base = PIXI.loader.resources.swordsman1.texture;
+			else var base = PIXI.loader.resources.swordsman2.texture;
+
+			actorTextures[i][0] = [];
+			actorTextures[i][1] = [];
+			actorTextures[i][2] = [];
+			actorTextures[i][3] = [];
+
+			for (var j = 0; j < 4; j++) {
+				var frameTexture = new PIXI.Texture(base);
+				frameTexture.frame = new PIXI.Rectangle(5 + 100*j, 0, 90, 98);
+				actorTextures[i][0][j] = [frameTexture, frameTexture];
+			}
+			for (var j = 0; j < 4; j++) {
+				actorTextures[i][1][j] = [];
+				for (var k = 0; k < 3; k++) {
+					var frameTexture = new PIXI.Texture(base);
+					frameTexture.frame = new PIXI.Rectangle(5 + 100*k, 100 + 300*j, 90, 98);
+					actorTextures[i][1][j][k] = frameTexture;
+				}
+			}
+			for (var j = 0; j < 4; j++) {
+				actorTextures[i][2][j] = [];
+				for (var k = 0; k < 4; k++) {
+					var frameTexture = new PIXI.Texture(base);
+					frameTexture.frame = new PIXI.Rectangle(2 + 100*k, 200 + 300*j, 100, 98);
+					actorTextures[i][2][j][k] = frameTexture;
+				}
+			}
+			for (var j = 0; j < 4; j++) {
+				actorTextures[i][3][j] = [];
+				for (var k = 0; k < 4; k++) {
+					var frameTexture = new PIXI.Texture(base);
+					frameTexture.frame = new PIXI.Rectangle(2 + 100*k, 300*(j+1), 100, 98);
+					actorTextures[i][3][j][k] = frameTexture;
+				} //speed = 0.3
+			}
+			actorSprites[i] = new PIXI.extras.AnimatedSprite(actorTextures[i][0][0]);
+			actorSprites[i].animationSpeed = 0.10;
+			actorSprites[i].play();
+			actorSprites[i].state = 's';
 		}
 		else if (actors[i].actorType == 5)
 			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.scout.texture);
@@ -392,11 +430,12 @@ function animation() {
 	// spriteSheet.play();
 	// stage.addChild(spriteSheet);
 
-	var base = PIXI.loader.resources.running.texture;
+	var base = PIXI.loader.resources.swordsman1.texture;
 	var textures = [];
-	for (var i = 0; i < 10; i++) {
+	for (var i = 0; i < 4; i++) {
 		var frameTexture = new PIXI.Texture(base);
-		frameTexture.frame = new PIXI.Rectangle(32 * i, 0, 17, 24);
+		frameTexture.frame = new PIXI.Rectangle(5 + 100*i, 0, 90, 98);
+		// frameTexture.frame = new PIXI.Rectangle(32 * i, 0, 17, 24);
 		textures[i] = frameTexture;
 	}
 
