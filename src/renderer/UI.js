@@ -47,9 +47,11 @@ document.body.addEventListener("keydown", function(e) {
 		if (e.keyCode == 187 || e.keyCode == 189) {
 			e.preventDefault();
 		}
-		// For Testing
 		if (e.keyCode == 82) {
-			child.kill();
+			e.preventDefault();
+		}
+		if (e.keyCode == 73) {
+			e.preventDefault();
 		}
 
 		if (rendererState == 3) {
