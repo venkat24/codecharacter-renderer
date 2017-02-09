@@ -165,7 +165,6 @@ function loadGame() {
 	loadFog();
 	loadHP();
 	loadBases();
-	animation(); // FOR TESTING ONLY
 }
 
 function getTerrain() {
@@ -352,8 +351,6 @@ function loadActors() {
 			actorSprites[i].animationSpeed = 0.10;
 			actorSprites[i].play();
 			actorSprites[i].state = 's';
-
-			// actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.scout.texture);
 		}
 		else if (actors[i].actorType == 4) {
 			if (actors[i].playerId === 0) {
@@ -417,9 +414,6 @@ function loadActors() {
 			actorSprites[i].animationSpeed = 0.10;
 			actorSprites[i].play();
 			actorSprites[i].state = 's';
-
-
-			// actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
 		}
 
 		actorSprites[i].setTransform(actors[i].x, actors[i].y);
@@ -515,40 +509,6 @@ function loadBases() {
 	}
 }
 
-function animation() {
-	// var base = PIXI.loader.resources.wizard1.texture;
-	// var textures = [];
-	// for (var j = 0; j < 4; j++) {
-	// 	var frameTexture = new PIXI.Texture(base);
-	// 	frameTexture.frame = new PIXI.Rectangle(5 + 100*j, 100, 90, 100);
-	// 	textures[j] = frameTexture;
-	// }
-
-	// spriteSheet = new PIXI.extras.AnimatedSprite(actorTextures[61][3][3]);
-	// spriteSheet.position.set(animatedSprite.x, animatedSprite.y);
-	// spriteSheet.scale.set(1.25);
-	// spriteSheet.animationSpeed = 0.25;
-	// spriteSheet.play();
-	// stage.addChild(spriteSheet);
-
-	var base = PIXI.loader.resources.scout1.texture;
-	var textures = [];
-	for (var i = 0; i < 4; i++) {
-		var frameTexture = new PIXI.Texture(base);
-		frameTexture.frame = new PIXI.Rectangle(5 + 100*i, 0, 90, 98);
-		frameTexture.frame = new PIXI.Rectangle(5 + 150*i, 150 + 450, 140, 140);
-		// frameTexture.frame = new PIXI.Rectangle(32 * i, 0, 17, 24);
-		textures[i] = frameTexture;
-	}
-
-	spriteSheet = new PIXI.extras.AnimatedSprite(textures);
-	spriteSheet.position.set(animatedSprite.x, animatedSprite.y);
-	spriteSheet.scale.set(1.25);
-	spriteSheet.animationSpeed = 0.35;
-	spriteSheet.play();
-	stage.addChild(spriteSheet);
-}
-
 function fadeIn() {
 	fade.style.zIndex = -10;
 	fade.style.opacity = 0;
@@ -568,11 +528,11 @@ function displayScore() {
 	document.getElementById('score').style.visibility = 'hidden';
 
 	if (stateVariable.scorePlayer1.low > stateVariable.scorePlayer2.low) {
-		document.getElementById('outcome').innerHTML = "YOU WON";
-		document.getElementById('outcome').style.color = "green";
-	} else if (stateVariable.scorePlayer1.low < stateVariable.scorePlayer2.low) {
-		document.getElementById('outcome').innerHTML = "YOU LOST";
+		document.getElementById('outcome').innerHTML = "WINNER: PLAYER 1";
 		document.getElementById('outcome').style.color = "red";
+	} else if (stateVariable.scorePlayer1.low < stateVariable.scorePlayer2.low) {
+		document.getElementById('outcome').innerHTML = "WINNER: PLAYER 2";
+		document.getElementById('outcome').style.color = "blue";
 	} else {
 		document.getElementById('outcome').innerHTML = "DRAW";
 		document.getElementById('outcome').style.color = "white";
@@ -595,18 +555,3 @@ function endGame() {
 	document.getElementById('result2').innerHTML = '0';
 	setTimeout(fadeIn, 500);
 }
-
-		// var base = PIXI.loader.resources.swordsman1.texture;
-		// var textures = [];
-		// for (var i = 0; i < 4; i++) {
-		// 	var frameTexture = new PIXI.Texture(base);
-		// 	frameTexture.frame = new PIXI.Rectangle(28 + 100.5*i, 100, 41, 91);
-		// 	textures[i] = frameTexture;
-		// }
-
-		// spriteSheet = new PIXI.extras.AnimatedSprite(textures);
-		// spriteSheet.position.set(animatedSprite.x, animatedSprite.y);
-		// spriteSheet.scale.set(1.25);
-		// spriteSheet.animationSpeed = 0.35;
-		// spriteSheet.play();
-		// stage.addChild(spriteSheet);
