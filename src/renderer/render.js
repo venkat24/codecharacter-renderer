@@ -201,6 +201,53 @@ function update() {
 						actorSprites[i].textures = actorTextures[i][0][0];
 				}
 			}
+			else if (actors[i].actorType === 5) {
+				if (actors[i].isAttacking) {
+					var xDiff = actors[i].attackTargetPosition.x - actors[i].x;
+					var yDiff = actors[i].attackTargetPosition.y - actors[i].y;
+					if (Math.abs(xDiff) > Math.abs(yDiff)) {
+						if (xDiff > 0 && actorSprites[i].state != 'aRight') {
+							actorSprites[i].state = 'aRight';
+							actorSprites[i].textures = actorTextures[i][2][1];
+						} else if (xDiff <= 0 && actorSprites[i].state != 'aLeft'){
+							actorSprites[i].state = 'aLeft';
+							actorSprites[i].textures = actorTextures[i][2][0];
+						}
+					} else {
+						if (yDiff > 0 && actorSprites[i].state != 'aDown') {
+							actorSprites[i].state = 'aDown';
+							actorSprites[i].textures = actorTextures[i][2][2];
+						} else if (yDiff <= 0 && actorSprites[i].state != 'aUp'){
+							actorSprites[i].state = 'aUp';
+							actorSprites[i].textures = actorTextures[i][2][3];
+						}
+					}
+				} else if (actors[i].isMoving) {
+					var xDiff = actors[i].destination.x - actors[i].x;
+					var yDiff = actors[i].destination.y - actors[i].y;
+					if (Math.abs(xDiff) > Math.abs(yDiff)) {
+						if (xDiff > 0 && actorSprites[i].state != 'mRight') {
+							actorSprites[i].state = 'mRight';
+							actorSprites[i].textures = actorTextures[i][1][1];
+						} else if (xDiff <= 0 && actorSprites[i].state != 'mLeft'){
+							actorSprites[i].state = 'mLeft';
+							actorSprites[i].textures = actorTextures[i][1][0];
+						}
+					} else {
+						if (yDiff > 0 && actorSprites[i].state != 'mDown') {
+							actorSprites[i].state = 'mDown';
+							actorSprites[i].textures = actorTextures[i][1][2];
+						} else if (yDiff <= 0 && actorSprites[i].state != 'mUp'){
+							actorSprites[i].state = 'mUp';
+							actorSprites[i].textures = actorTextures[i][1][3]
+						}
+					}
+				} else if (actorSprites[i].state != 's'){
+					actorSprites[i].state = 's';
+					if (actorTextures[i][0])
+						actorSprites[i].textures = actorTextures[i][0][0];
+				}
+			}
 			actorSprites[i].setTransform(actors[i].x + change.x, actors[i].y + change.y);
 
 			if (actors[i].actorType != 5 || actors[i].playerId == losState - 1 || losState === 0) {
