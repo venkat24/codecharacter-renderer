@@ -284,7 +284,7 @@ function update() {
 				}
 			}
 
-			actorSprites[i].setTransform(actors[i].x + change.x, actors[i].y + change.y);
+			actorSprites[i].setTransform(actors[i].x + change.x, actors[i].y + change.y, 1.2, 1.2);
 
 			if (actors[i].actorType != 5 || actors[i].playerId == losState - 1 || losState === 0) {
 				if (visibility(actors[i]) == 2)
@@ -385,10 +385,6 @@ function update() {
 		if (bases[i])
 			baseSprites[i].setTransform(bases[i].x + change.x - 102, bases[i].y + change.y - 102);
 	}
-
-	// FOR TESTING ONLY
-	if(spriteSheet)
-		spriteSheet.setTransform(animatedSprite.x + change.x, animatedSprite.y + change.y, 1.25, 1.25);
 }
 
 function visibility(object) {
