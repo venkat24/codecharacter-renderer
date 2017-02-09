@@ -4,7 +4,7 @@ var num = fs.readFileSync(path.join(__dirname, 'ipc/codechar/level_number.txt'))
 
 for (var i = 1; i <= num; i++) {
 	var div = document.createElement("div");
-	div.innerHTML = "<div class=\"menu-button\" id=\"level"+ i +"\" onclick=\"level='0"+ i +"'; startStory();\"> <div class=\"button-text\">Level "+ i +"</div></div>";
+	div.innerHTML = "<div class=\"menu-button\" id=\"level"+ i +"\" onclick=\"level='0"+ i +"'; loadChild();\"> <div class=\"button-text\">Level "+ i +"</div></div>";
 	document.body.appendChild(div);
 }
 
@@ -18,6 +18,7 @@ function exit() {
 	if (rendererState == 3 || rendererState == 4) {
 		fade.style.zIndex = 100;
 		fade.style.opacity = 1;
+		document.getElementById('score').style.visibility = 'hidden';
 		child.kill();
 		ipcRenderer.send('pid-message', null);
 		rendererState = 0;
@@ -78,20 +79,6 @@ function los() {
 	}, 500);
 }
 
-function startStory() {
-	if (rendererState == 1) {
-		fade.style.zIndex = 100;
-		fade.style.opacity = 1;
-
-		setTimeout(function() {
-			rendererState = 2;
-			visiblitityChange();
-			menu.visible = false;
-			loadStory();
-		}, 500);
-	}
-}
-
 function loadChild() {
 	if (rendererState != 3) {
 		child = spawn(path.join(__dirname, 'ipc/codechar/bin/main'), ['r', level], {
@@ -135,8 +122,6 @@ function startGame() {
 function visiblitityChange() {
 	if (rendererState == 1) {
 
-		document.getElementById('slide-in').style.visibility = 'visible';
-		document.getElementById('score').style.visibility = 'hidden';
 		document.getElementById('end-screen').style.zIndex = -10;
 		document.getElementById('end-screen').style.opacity = 0;
 		document.getElementById('lclick').style.zIndex = -10;
@@ -152,7 +137,6 @@ function visiblitityChange() {
 
 	} else if (rendererState == 2) {
 
-		document.getElementById('slide-in').style.visibility = 'hidden';
 		document.getElementById('score').style.visibility = 'hidden';
 		document.getElementById('lclick').style.zIndex = 99;
 		document.getElementById('lclick').style.opacity = 1;
@@ -167,7 +151,6 @@ function visiblitityChange() {
 
 	} else if (rendererState == 3) {
 
-		document.getElementById('slide-in').style.visibility = 'hidden';
 		document.getElementById('score').style.visibility = 'visible';
 		document.getElementById('lclick').style.zIndex = -10;
 		document.getElementById('lclick').style.opacity = 0;
