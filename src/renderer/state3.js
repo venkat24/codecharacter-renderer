@@ -149,14 +149,6 @@ var map,
 	fog = [];
 
 
-// **FOR TESTING ONLY. All actors will be drawn with spritesheet animations in the final version**
-var spriteSheet;
-var animatedSprite = {
-	x: 850,
-	y: 200
-};
-// **..**
-
 function loadGame() {
 	loadTerrain();
 	loadActors();
