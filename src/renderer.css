@@ -45,7 +45,6 @@ div.menu-button {
   position: fixed;
   width: 10%;
   box-shadow: 0px 3px 10px #111111, 0px 10px 50px #333333;
-  right: calc(30% - 100px);
   padding: 20px;
   background-color: #028948;
   transition: 0.1s;
@@ -59,28 +58,33 @@ div.menu-button {
 }
 
 #level1 {
-  top: calc(16% - 29px);
-  animation-delay: 2.5s;
+  top: calc(50% - 29px);
+  left: calc(20% - 100px);
+  animation-delay: 1s;
 }
 
 #level2 {
-  top: calc(33% - 29px);
-  animation-delay: 2.7s;
+  top: calc(50% - 29px);
+  left: calc(50% - 100px);
+  animation-delay: 1.2s;
 }
 
 #level3 {
   top: calc(50% - 29px);
-  animation-delay: 2.9s;
+  left: calc(80% - 100px);
+  animation-delay: 1.4s;
 }
 
 #level4 {
-  top: calc(67% - 29px);
-  animation-delay: 3.1s;
+  top: calc(80% - 29px);
+  left: calc(35% - 100px);
+  animation-delay: 1.6s;
 }
 
 #level5 {
-  top: calc(84% - 29px);
-  animation-delay: 3.3s;
+  top: calc(80% - 29px);
+  left: calc(65% - 100px);
+  animation-delay: 1.8s;
 }
 
 .button-text {

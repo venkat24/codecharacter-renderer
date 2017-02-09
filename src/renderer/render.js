@@ -90,8 +90,8 @@ function update() {
 
 	for (var i = 0; i < grid.length; i++) {
 		for (var j = 0; j < grid[i].length; j++) {
-			grid[i][j].setTransform(change.x + gridSize * i, change.y + gridSize * j, gridSize/256, gridSize/256);
-			fog[i][j].setTransform(change.x + gridSize * i, change.y + gridSize * j, gridSize/256, gridSize/256);
+			grid[i][j].setTransform(change.x + gridSize * i, change.y + gridSize * j);
+			fog[i][j].setTransform(change.x + gridSize * i, change.y + gridSize * j);
 			if (!terrainVisibility[i][j]) {
 				grid[i][j].visible = false;
 				fog[i][j].visible = false;
@@ -202,27 +202,7 @@ function update() {
 				}
 			}
 			else if (actors[i].actorType === 5) {
-				if (actors[i].isAttacking) {
-					var xDiff = actors[i].attackTargetPosition.x - actors[i].x;
-					var yDiff = actors[i].attackTargetPosition.y - actors[i].y;
-					if (Math.abs(xDiff) > Math.abs(yDiff)) {
-						if (xDiff > 0 && actorSprites[i].state != 'aRight') {
-							actorSprites[i].state = 'aRight';
-							actorSprites[i].textures = actorTextures[i][2][1];
-						} else if (xDiff <= 0 && actorSprites[i].state != 'aLeft'){
-							actorSprites[i].state = 'aLeft';
-							actorSprites[i].textures = actorTextures[i][2][0];
-						}
-					} else {
-						if (yDiff > 0 && actorSprites[i].state != 'aDown') {
-							actorSprites[i].state = 'aDown';
-							actorSprites[i].textures = actorTextures[i][2][2];
-						} else if (yDiff <= 0 && actorSprites[i].state != 'aUp'){
-							actorSprites[i].state = 'aUp';
-							actorSprites[i].textures = actorTextures[i][2][3];
-						}
-					}
-				} else if (actors[i].isMoving) {
+				if (actors[i].isMoving) {
 					var xDiff = actors[i].destination.x - actors[i].x;
 					var yDiff = actors[i].destination.y - actors[i].y;
 					if (Math.abs(xDiff) > Math.abs(yDiff)) {
@@ -248,6 +228,62 @@ function update() {
 						actorSprites[i].textures = actorTextures[i][0][0];
 				}
 			}
+			else if (actors[i].actorType === 4) {
+				if (actors[i].isCarryingFlag) {
+					if (actors[i].isMoving) {
+						var xDiff = actors[i].destination.x - actors[i].x;
+						var yDiff = actors[i].destination.y - actors[i].y;
+						if (Math.abs(xDiff) > Math.abs(yDiff)) {
+							if (xDiff > 0 && actorSprites[i].state != 'mRight') {
+								actorSprites[i].state = 'mRight';
+								actorSprites[i].textures = actorTextures[i][4][1];
+							} else if (xDiff <= 0 && actorSprites[i].state != 'mLeft'){
+								actorSprites[i].state = 'mLeft';
+								actorSprites[i].textures = actorTextures[i][4][0];
+							}
+						} else {
+							if (yDiff > 0 && actorSprites[i].state != 'mDown') {
+								actorSprites[i].state = 'mDown';
+								actorSprites[i].textures = actorTextures[i][4][2];
+							} else if (yDiff <= 0 && actorSprites[i].state != 'mUp'){
+								actorSprites[i].state = 'mUp';
+								actorSprites[i].textures = actorTextures[i][4][3]
+							}
+						}
+					} else if (actorSprites[i].state != 's'){
+						actorSprites[i].state = 's';
+						if (actorTextures[i][3])
+							actorSprites[i].textures = actorTextures[i][0][0];
+					}
+				} else {
+					if (actors[i].isMoving) {
+						var xDiff = actors[i].destination.x - actors[i].x;
+						var yDiff = actors[i].destination.y - actors[i].y;
+						if (Math.abs(xDiff) > Math.abs(yDiff)) {
+							if (xDiff > 0 && actorSprites[i].state != 'mRight') {
+								actorSprites[i].state = 'mRight';
+								actorSprites[i].textures = actorTextures[i][1][1];
+							} else if (xDiff <= 0 && actorSprites[i].state != 'mLeft'){
+								actorSprites[i].state = 'mLeft';
+								actorSprites[i].textures = actorTextures[i][1][0];
+							}
+						} else {
+							if (yDiff > 0 && actorSprites[i].state != 'mDown') {
+								actorSprites[i].state = 'mDown';
+								actorSprites[i].textures = actorTextures[i][1][2];
+							} else if (yDiff <= 0 && actorSprites[i].state != 'mUp'){
+								actorSprites[i].state = 'mUp';
+								actorSprites[i].textures = actorTextures[i][1][3]
+							}
+						}
+					} else if (actorSprites[i].state != 's'){
+						actorSprites[i].state = 's';
+						if (actorTextures[i][0])
+							actorSprites[i].textures = actorTextures[i][0][0];
+					}
+				}
+			}
+
 			actorSprites[i].setTransform(actors[i].x + change.x, actors[i].y + change.y);
 
 			if (actors[i].actorType != 5 || actors[i].playerId == losState - 1 || losState === 0) {
@@ -259,6 +295,9 @@ function update() {
 					actorSprites[i].visible = true;
 				else actorSprites[i].visible = false;
 			}
+
+			if (actors[i].hp === 0) 
+				actorSprites[i].visible = false;
 		}
 	}
 	for (var i = 0; i < actorHP.length; i++) {
@@ -305,11 +344,11 @@ function update() {
 				var scale2 = 1;
 			}
 
-			towerHP[i][0].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 12, health, 1);
-			towerHP[i][1].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 26, scale1, 1);
-			towerHP[i][2].setTransform(towerHP[i][1].x + towerHP[i][1].width, towerHP[i][1].y, scale2, 1);
+			towerHP[i][0].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 12, health*3, 1);
+			towerHP[i][1].setTransform(towers[i].x + change.x - 5, towers[i].y + change.y - 26, scale1*3, 1);
+			towerHP[i][2].setTransform(towerHP[i][1].x + towerHP[i][1].width, towerHP[i][1].y, scale2*3, 1);
 			towerHP[i][3].setTransform(towerHP[i][1].x + towerHP[i][1].width, towerHP[i][1].y + 3.5);
-			towerHP[i][4].setTransform(towers[i].x + change.x - 6, towers[i].y + change.y - 13);
+			towerHP[i][4].setTransform(towers[i].x + change.x - 6, towers[i].y + change.y - 13, 3, 1);
 
 			if (visibility(towers[i]) == 2) {
 				towerHP[i][0].visible = true;

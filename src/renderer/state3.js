@@ -213,7 +213,7 @@ function loadTerrain() {
 			else if (terrain[i][j] === 2)
 				grid[i][j] = new PIXI.Sprite(PIXI.loader.resources.mountain.texture);
 
-			grid[i][j].setTransform(gridSize * i, gridSize * j, gridSize/256, gridSize/256); // 256 is the image's size.
+			grid[i][j].setTransform(gridSize * i, gridSize * j, gridSize/200, gridSize/200); // 256 is the image's size.
 			stage.addChild(grid[i][j]);
 		}
 	}
@@ -230,7 +230,7 @@ function loadFog() {
 		fog[i] = [];
 		for (var j = 0; j < terrain[i].length; j++) {
 			fog[i][j] = new PIXI.Sprite(PIXI.loader.resources.fog.texture);
-			fog[i][j].setTransform(gridSize * i, gridSize * j, 0.8, 0.8);
+			fog[i][j].setTransform(gridSize * i, gridSize * j);
 			stage.addChild(fog[i][j]);
 		}
 	}
@@ -325,7 +325,6 @@ function loadActors() {
 
 			actorTextures[i][0] = [];
 			actorTextures[i][1] = [];
-			actorTextures[i][2] = [];
 			actorTextures[i][3] = [];
 
 			for (var j = 0; j < 4; j++) {
@@ -357,7 +356,70 @@ function loadActors() {
 			// actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.scout.texture);
 		}
 		else if (actors[i].actorType == 4) {
-			actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
+			if (actors[i].playerId === 0) {
+				var base1 = PIXI.loader.resources.king1.texture;
+				var base2 = PIXI.loader.resources.kingFlag1.texture;
+			} else {
+				var base1 = PIXI.loader.resources.king2.texture;
+				var base2 = PIXI.loader.resources.king2.texture;
+			}
+
+			actorTextures[i][0] = [];
+			actorTextures[i][1] = [];
+			actorTextures[i][2] = [];
+			actorTextures[i][3] = [];
+			actorTextures[i][4] = [];
+			actorTextures[i][5] = [];
+
+			for (var j = 0; j < 4; j++) {
+				var frameTexture = new PIXI.Texture(base1);
+				frameTexture.frame = new PIXI.Rectangle(94*j, 0, 90, 95);
+				actorTextures[i][0][j] = [frameTexture, frameTexture];
+			}
+			for (var j = 0; j < 4; j++) {
+				var frameTexture = new PIXI.Texture(base2);
+				frameTexture.frame = new PIXI.Rectangle(94*j, 0, 85, 95);
+				actorTextures[i][3][j] = [frameTexture, frameTexture];
+			}
+			for (var j = 0; j < 4; j++) {
+				actorTextures[i][1][j] = [];
+				for (var k = 0; k < 3; k++) {
+					var frameTexture = new PIXI.Texture(base1);
+					frameTexture.frame = new PIXI.Rectangle(94*k, 85 + 197*j, 85, 95);
+					actorTextures[i][1][j][k] = frameTexture;
+				}
+			}
+			for (var j = 0; j < 4; j++) {
+				actorTextures[i][4][j] = [];
+				for (var k = 0; k < 3; k++) {
+					var frameTexture = new PIXI.Texture(base2);
+					frameTexture.frame = new PIXI.Rectangle(94*k, 85 + 197*j, 85, 95);
+					actorTextures[i][4][j][k] = frameTexture;
+				}
+			}
+			for (var j = 0; j < 4; j++) {
+				actorTextures[i][2][j] = [];
+				for (var k = 0; k < 3; k++) {
+					var frameTexture = new PIXI.Texture(base1);
+					frameTexture.frame = new PIXI.Rectangle(94*k, 197*(j+1), 85, 95);
+					actorTextures[i][2][j][k] = frameTexture;
+				} //speed = 0.3
+			}
+			for (var j = 0; j < 4; j++) {
+				actorTextures[i][5][j] = [];
+				for (var k = 0; k < 3; k++) {
+					var frameTexture = new PIXI.Texture(base2);
+					frameTexture.frame = new PIXI.Rectangle(94*k, 197*(j+1), 85, 95);
+					actorTextures[i][5][j][k] = frameTexture;
+				} //speed = 0.3
+			}
+			actorSprites[i] = new PIXI.extras.AnimatedSprite(actorTextures[i][0][0]);
+			actorSprites[i].animationSpeed = 0.10;
+			actorSprites[i].play();
+			actorSprites[i].state = 's';
+
+
+			// actorSprites[i] = new PIXI.Sprite(PIXI.loader.resources.king.texture);
 		}
 
 		actorSprites[i].setTransform(actors[i].x, actors[i].y);
@@ -435,7 +497,9 @@ function loadFireBalls() {
 	}
 
 	for (var i = 0; i < fireBalls.length; i++) {
-		fireBallSprites[i] = new PIXI.Sprite(PIXI.loader.resources.fireBall.texture);
+		if (fireBalls[i].playerId === 0)
+			fireBallSprites[i] = new PIXI.Sprite(PIXI.loader.resources.fireBall1.texture);
+		else fireBallSprites[i] = new PIXI.Sprite(PIXI.loader.resources.fireBall2.texture);
 
 		fireBallSprites[i].setTransform(fireBalls[i].x, fireBalls[i].y, 1, 1, fireBalls[i].rotation);
 		stage.addChild(fireBallSprites[i]);
