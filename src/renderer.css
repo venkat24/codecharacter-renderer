@@ -255,7 +255,7 @@ div#score {
 }
 
 .score1 {
-  color: green;
+  color: red;
 }
 
 .break {
@@ -264,7 +264,7 @@ div#score {
 }
 
 .score2 {
-  color: red;
+  color: blue;
 }
 
 div#end-screen {
