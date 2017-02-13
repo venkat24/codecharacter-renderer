@@ -7,6 +7,7 @@ const ipcMain = require('electron').ipcMain
 
 const path = require('path')
 const url = require('url')
+const spawn = require('child_process').spawn
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -32,8 +33,14 @@ function createWindow () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    if (childId)
-      process.kill(childId)
+    if (childId) {
+      if (process.platform === 'win32') {
+        spawn("taskkill", ["/pid", childId, '/f', '/t']);
+      }
+      else {
+        process.kill(childId)
+      }
+    }
     mainWindow = null
   })
 }
@@ -48,8 +55,14 @@ app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
-    if (childId)
-      process.kill(childId)
+    if (childId) {
+      if (process.platform === 'win32') {
+        spawn("taskkill", ["/pid", childId, '/f', '/t']);
+      }
+      else {
+        process.kill(childId)
+      }
+    }
     app.quit()
   }
 })

@@ -19,7 +19,13 @@ function exit() {
 		fade.style.zIndex = 100;
 		fade.style.opacity = 1;
 		document.getElementById('score').style.visibility = 'hidden';
-		child.kill();
+		if (process.platform === 'win32') {
+			child.stdout.end();
+			spawn("taskkill", ["/pid", child.pid, '/f', '/t']);
+		}
+		else {
+			child.kill();
+		}
 		ipcRenderer.send('pid-message', null);
 		rendererState = 0;
 		resetConsole();
@@ -56,7 +62,13 @@ function restart() {
 		fade.style.zIndex = 100;
 		fade.style.opacity = 1;
 		resetConsole();
-		child.kill();
+		if (process.platform === 'win32') {
+			child.stdout.end();
+			spawn("taskkill", ["/pid", child.pid, '/f', '/t']);
+		}
+		else {
+			child.kill();
+		}
 		ipcRenderer.send('pid-message', null);
 
 		setTimeout(function() {
@@ -81,7 +93,10 @@ function los() {
 
 function loadChild() {
 	if (rendererState != 3) {
-		child = spawn(path.join(__dirname, 'ipc/codechar/bin/main'), ['r', level, path.join(__dirname, 'ipc/codechar/bin/level' + level + 'terrain')], {
+		var exec_name = path.join(__dirname, 'ipc/codechar/bin/main.exe');
+		var level_location = path.join(__dirname, 'ipc/codechar/bin/level' + level + '_terrain');
+		console.log(exec_name + "\n" + level_location);
+		child = spawn(exec_name, ['r', level, level_location], {
 			env: {
 				'LD_LIBRARY_PATH': path.join(__dirname, 'ipc/codechar/lib')
 			}
@@ -90,9 +105,12 @@ function loadChild() {
 		fade.style.zIndex = 100;
 		fade.style.opacity = 1;
 
+		child.stdout.setEncoding('ascii');
+
 		child.stdout.on('data', (data) => {
 			protobuf.load(path.join(__dirname, 'ipc/proto/state.proto'), function(err, root) {
-				setArrays(data, root.lookup("IPC.State"));
+				var curMessage = fs.readFileSync('1h');
+				setArrays(curMessage, root.lookup("IPC.State"));
 			});
 		});
 	}
