@@ -81,7 +81,7 @@ function los() {
 
 function loadChild() {
 	if (rendererState != 3) {
-		child = spawn(path.join(__dirname, 'ipc/codechar/bin/main'), ['r', level, path.join(__dirname, 'ipc/codechar/bin/level' + level + 'terrain')], {
+		child = spawn(path.join(__dirname, 'ipc/codechar/bin/main'), ['r', level, path.join(__dirname, 'ipc/codechar/bin/level' + level + '_terrain')], {
 			env: {
 				'LD_LIBRARY_PATH': path.join(__dirname, 'ipc/codechar/lib')
 			}
