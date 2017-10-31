@@ -1,6 +1,6 @@
 # Code Character Renderer
 
-Renderer for Code Character, a Pragyan '17 event.
+Renderer for Code Character, a Pragyan '17 event
 
 ---------------------------------------------------
 
